@@ -86,9 +86,9 @@ The European project [AutoMate](http://www.automate-project.eu/) project demonst
 
 I found a little bit impressive to drive at 70 km/h on a countryside-like road with the AD mode.
 
-| ![AD system asking for human collaboration when approaching a roundabout. Source: author provided.](media/gif/automate_take_over.gif "AD system asking for human collaboration when approaching a roundabout. Source: author provided.")  |
+| ![AD system asking for human collaboration when "approaching" *(we were still far)* a roundabout. Source: author provided.](media/gif/automate_take_over.gif "AD system asking for human collaboration when "approaching" *(we were still far)* a roundabout. Source: author provided.")  |
 |:--:|
-| *AD system asking for human collaboration when approaching a roundabout. Source: author provided.* |
+| *AD system asking for human collaboration when "approaching" *(we were still far)* a roundabout. Source: author provided.* |
 
 This demonstration raises questions about the cooperation between human driver and the autopilot. Here, the driver cannot be described as “distracted”. He was paying much attention and could therefore quickly take over.
 
@@ -96,7 +96,7 @@ In addition, only one request was submitted during the test. I can imagine it co
 
 Another thing I noticed is the **central display**. It is supposed to **inform the driver about the reason of disengagement**. But it may be not easy to understand, especially given the of risk/importance of the situation and the short time available to react. **OEMs still must prove** that **handover** of vehicle control can be done **safely**, **intuitively**, without **“disrupting user experience”**. 😉
 
->> To me, it is harder to monitor the autopilot than to drive on my own.
+> To me, it is harder to monitor the autopilot than to drive on my own.
 
 This also raises the question of the **driving licence**. In the aviation domain, pilots are trained to handle such transitions and to collaborate. Introducing **level-3 vehicles** (sometimes called *“conditionally-automated”*) in hands of **untrained people** is questionable. In the debate over **supervised vs unsupervised driving modes**, multiple OEMs have already announced they will **skip level-3**, arguing that **this handover of control is unsafe**.
 
@@ -106,7 +106,7 @@ A research team from UTC presented a **cooperative communication** between two v
 |:--:|
 | *V2V communication for roundabout crossing. Source: author provided.* |
 
-I felt very comfortable on the forest track driven by the Valeo [Drive4U® Urban Pilot](https://www.valeo.com/en/valeo-drive4u-the-first-autonomous-car-to-be-demonstrated-on-the-streets-of-paris/). Moreover, and compared to other AD demonstrators, all sensors were embedded and there was almost no cable visible in the vehicle cabin. And they did not hide everything in the back trunk 😉
+I felt very comfortable on the forest track driven by the Valeo [Drive4U® Urban Pilot](https://www.valeo.com/en/valeo-drive4u-the-first-autonomous-car-to-be-demonstrated-on-the-streets-of-paris/). Moreover, and compared to other AD demonstrators, all sensors were embedded and there was almost no cable visible in the vehicle cabin. And they did not hide everything in the back trunk. 😉
 
 | ![Valeo Drive4U® Urban Pilot. Source: author provided.](media/pics/valeo.JPG "Valeo Drive4U® Urban Pilot. Source: author provided.")  |
 |:--:|
@@ -144,17 +144,19 @@ EasyMile and safety validation.
 
 I really enjoyed discussing with some of the engineers from EasyMile! They stressed the importance of the **development process** for **safety validation**. They took the example of the aviation domain where some **sensors must be made redundant** and must even originate from two different manufacturers. This is currently not the case for AD where, despite multi-modality in perception, there is usually one single camera per direction. What is more important to the safety validation authorities is **how the full system has been developed**. In particular the **“safety checker”** that **runs in parallel to the driving functions** must have been **developed independently** of these driving functions, by an **independent team**.
 
+## Conclusion
+
 Tom Vöge ended his keynote with a **gentle joke to EasyMile**. He mentioned the EU-funded project [parkshut](https://staff.washington.edu/jbs/itrans/parkshut.htm) to was developing an AD shuttle service. The park shuttle was released to the public in April 1999. He said:
 
 > “Twenty years later we are still at the same point with AD: demonstration”.
 
-| ![ParkShuttle (1999) and EasyMile (2019). Sources: [top](https://staff.washington.edu/jbs/itrans/parkshut.htm) [bottom](https://www.facebook.com/EasyMile/)](media/pics/easymile_vs_park_shuttle.jpg "ParkShuttle (1999) and EasyMile (2019). Sources: [top](https://staff.washington.edu/jbs/itrans/parkshut.htm) [bottom](https://www.facebook.com/EasyMile/)")  |
+| ![ParkShuttle (1999) and EasyMile (2019). Sources: [top](https://staff.washington.edu/jbs/itrans/parkshut.htm) - [bottom](https://www.facebook.com/EasyMile/).](media/pics/easymile_vs_park_shuttle.jpg "ParkShuttle (1999) and EasyMile (2019). Sources: [top](https://staff.washington.edu/jbs/itrans/parkshut.htm) - [bottom](https://www.facebook.com/EasyMile/).")  |
 |:--:|
-| *ParkShuttle (1999) and EasyMile (2019). Sources: [top](https://staff.washington.edu/jbs/itrans/parkshut.htm) [bottom](https://www.facebook.com/EasyMile/)* |
+| *ParkShuttle (1999) and EasyMile (2019). Sources: [top](https://staff.washington.edu/jbs/itrans/parkshut.htm) - [bottom](https://www.facebook.com/EasyMile/).* |
 
 This is a little bit unfair for EasyMile since they are one of the very few to already operate AD vehicles with public. But this punchy conclusion reminded everyone that **we still have a long way to go before AD exit, and become beneficial for the society**.
 
-## The Last Word
+## A Last Word
 
 IV19 was my first scientific symposium. I could meet leading-edge researchers and engineers in my domain of interest while broadening my perspectives on other AD topics.
 
@@ -170,175 +172,175 @@ Again, many thanks at [ESR Labs AG](https://www.esrlabs.com) for this great oppo
 
 ## References
 
-[Akai, Naoki et al.] 2019.
+Akai, Naoki et al. [2019].
 **“Driving Behavior Modeling Based on Hidden Markov Models with Driver’s Eye-Gaze Measurement and Ego-Vehicle Localization”**
 [[pdf](https://www.researchgate.net/publication/332543438_Driving_Behavior_Modeling_Based_on_Hidden_Markov_Models_with_Driver%27s_Eye-Gaze_Measurement_and_Ego-Vehicle_Localization)]
 
-[Alahi, Alexandre et al.] 2016.
+Alahi, Alexandre et al. [2016].
 **“Social LSTM: Human Trajectory Prediction in Crowded Spaces”**
 [[pdf](http://cvgl.stanford.edu/papers/CVPR16_Social_LSTM.pdf)]
 
-[Barbier, Mathieu et al.] 2019.
+Barbier, Mathieu et al. [2019].
 **“Validation of Perception and Decision-Making Systems for Autonomous Driving via Statistical Model Checking”**
 [[pdf](https://hal.inria.fr/hal-02127889/document)]
 
-[Barbier, Mathieu, Christian Laugier, Olivier Simonin, and Javier Ibanez-Guzmin.] 2018.
+Barbier, Mathieu, Christian Laugier, Olivier Simonin, and Javier Ibanez-Guzmin. [2018].
 **“Probabilistic Decision-Making at Road Intersections: Formulation and Quantitative Evaluation”**
 [[pdf](https://hal.inria.fr/hal-01940392/document)]
 
-[Bernhard, Julian, and Alois Knoll.] 2019.
+Bernhard, Julian, and Alois Knoll. [2019].
 **“Addressing Inherent Uncertainty: Risk-Sensitive Behavior Generation Using Distributional Reinforcement Learning”**
 [[html](https://mediatum.ub.tum.de/node?id=1485138)]
 
-[Bouton, Maxime, Alireza Nakhaei, Kikuo Fujimura, and Mykel J Kochenderfer.] 2019.
+Bouton, Maxime, Alireza Nakhaei, Kikuo Fujimura, and Mykel J Kochenderfer. [2019].
 **“Safe Reinforcement Learning with Scene Decomposition for Navigating Complex Urban Environments”**
 [[pdf](https://arxiv.org/abs/1904.11483)]
 
-[Chauvin, Simon.] 2018.
+Chauvin, Simon. [2018].
 **“Hierarchical Decision-Making for Autonomous Driving”**
 [[pdf](https://github.com/chauvinSimon/Hierarchical-Decision-Making-for-Autonomous-Driving)]
 
-[Chen, Jianyu, Bodi Yuan, and Masayoshi Tomizuka.] 2019.
+Chen, Jianyu, Bodi Yuan, and Masayoshi Tomizuka. [2019].
 **“Model-Free Deep Reinforcement Learning for Urban Autonomous Driving”**
 [[pdf](http://arxiv.org/abs/1904.09503)]
 
-[Chen, Longsheng et al.] 2019.
+Chen, Longsheng et al. [2019].
 **“An Adaptive Path Tracking Controller Based on Reinforcement Learning with Urban Driving Application”**
 [-]
 
-[Diehl, Frederik, Thomas Brunner, Michael Truong Le, and Alois Knoll.] 2019.
+Diehl, Frederik, Thomas Brunner, Michael Truong Le, and Alois Knoll. [2019].
 **“Graph Neural Networks for Modelling Traffic Participant Interaction”**
 [[pdf](https://arxiv.org/abs/1903.01254)]
 
-[Driggs-Campbell, Katherine, Roy Dong, S. Shankar Sastry, and Ruzena Bajcsy.] 2017.
+Driggs-Campbell, Katherine, Roy Dong, S. Shankar Sastry, and Ruzena Bajcsy. [2017].
 **“Robust, Informative Human-in-the-Loop Predictions via Empirical Reachable Sets”**
 [[pdf](https://arxiv.org/abs/1705.00748)]
 
-[Esterle, Klemens, Vincent Aravantinos, and Alois Knoll.] 2019.
+Esterle, Klemens, Vincent Aravantinos, and Alois Knoll. [2019].
 **“From Specifications to Behavior: Maneuver Verification in a Semantic State Space”**
 [[pdf](https://arxiv.org/abs/1905.00708)]
 
-[Folkers, Andreas, Matthias Rick, and B Christof.] 2019.
+Folkers, Andreas, Matthias Rick, and B Christof. [2019].
 **“Controlling an Autonomous Vehicle with Deep Reinforcement Learning”**
 [-]
 
-[Hartmann, Michael, and Daniel Watzenig.] 2019.
+Hartmann, Michael, and Daniel Watzenig. [2019].
 **“Optimal Motion Planning with Reachable Sets of Vulnerable Road Users”**
 [-]
 
-[Hoel, Carl-Johan et al.] 2019.
+Hoel, Carl-Johan et al. [2019].
 **“Combining Planning and Deep Reinforcement Learning in Tactical Decision Making for Autonomous Driving”**
 [[pdf](https://arxiv.org/abs/1905.02680)]
 
-[Hu, Yeping, Wei Zhan, and Masayoshi Tomizuka.] 2019.
+Hu, Yeping, Wei Zhan, and Masayoshi Tomizuka. [2019].
 **“Multi-Modal Probabilistic Prediction of Interactive Behavior via an Interpretable Model”**
 [[pdf](https://arxiv.org/abs/1903.09381)]
 
-[Hubmann, Constantin et al. 2019.]
+Hubmann, Constantin et al. [2019].
 **“A POMDP Maneuver Planner For Occlusions in Urban Scenarios”**
 [-]
 
-[Joonatan, Mänttäri, and John Folkesson.] 2019.
+Joonatan, Mänttäri, and John Folkesson. [2019].
 **“Incorporating Uncertainty in Predicting Vehicle Maneuvers at Intersections With Complex Interactions”**
 [-]
 
-[Kang, Yue, Hang Yin, and Christian Berger.] 2018.
+Kang, Yue, Hang Yin, and Christian Berger. [2018].
 **“Test Your Self-Driving Algorithm : An Overview of Publicly Available Driving Datasets and Virtual Testing Environments”**
 [[pdf](https://www.researchgate.net/publication/331723628_Test_Your_Self-Driving_Algorithm_An_Overview_of_Publicly_Available_Driving_Datasets_and_Virtual_Testing_Environments)]
 
-[Kapania, Nitin R., Vijay Govindarajan, Francesco Borrelli, and J. Christian Gerdes.] 2019.
+Kapania, Nitin R., Vijay Govindarajan, Francesco Borrelli, and J. Christian Gerdes. [2019].
 **“A Hybrid Control Design for Autonomous Vehicles at Uncontrolled Crosswalks”**
 [[pdf](https://arxiv.org/abs/1902.00597)]
 
-[Klischat, Moritz, and Matthias Althoff.] 2019.
+Klischat, Moritz, and Matthias Althoff. [2019].
 **“Generating Critical Test Scenarios for Automated Vehicles with Evolutionary Algorithms”**
 [[pdf](https://www.researchgate.net/publication/333186174_Generating_Critical_Test_Scenarios_for_Automated_Vehicles_with_Evolutionary_Algorithms)]
 
-[Koenig, Alexander, Tobias Rehder, and Soeren Hohmann.] 2017.
+Koenig, Alexander, Tobias Rehder, and Soeren Hohmann. [2017].
 **“Exact Inference and Learning in Hybrid Bayesian Networks for Lane Change Intention Classification”**
 [[html](https://ieeexplore.ieee.org/document/7995927/)]
 
-[Kong, Jason, Mark Pfeiffer, Georg Schildbach, and Francesco Borrelli.] 2015.
+Kong, Jason, Mark Pfeiffer, Georg Schildbach, and Francesco Borrelli. [2015].
 **“Kinematic and Dynamic Vehicle Models for Autonomous Driving Control Design”**
 [[pdf](https://borrelli.me.berkeley.edu/pdfpub/IV_KinematicMPC_jason.pdf)]
 
-[Lee, Namhoon et al.] 2017.
+Lee, Namhoon et al. [2017].
 **“DESIRE : Distant Future Prediction in Dynamic Scenes with Interacting Agents”**
 [[pdf](https://arxiv.org/abs/1704.04394)]
 
-[Li, Jiachen, Hengbo Ma, Wei Zhan, and Masayoshi Tomizuka.] 2019.
+Li, Jiachen, Hengbo Ma, Wei Zhan, and Masayoshi Tomizuka. [2019].
 **“Coordination and Trajectory Prediction for Vehicle Interactions via Bayesian Generative Modeling”**
 [[pdf](http://arxiv.org/abs/1905.00587)]
 
-[Li, Yang et al.] 2019.
+Li, Yang et al. [2019].
 **“Pedestrian Trajectory Prediction With Learning-Based Approaches : A Comparative Study”**
 [-]
 
-[Ma, Hengbo, Jiachen Li, Wei Zhan, and Masayoshi Tomizuka.] 2019.
+Ma, Hengbo, Jiachen Li, Wei Zhan, and Masayoshi Tomizuka. [2019].
 **“Wasserstein Generative Learning with Kinematic Constraints for Probabilistic Prediction of Interactive Driving Behavior”**
 [-]
 
-[Naumann, Maximilian, Hendrik Königshof, Martin Lauer, and Christoph Stiller.] 2019.
+Naumann, Maximilian, Hendrik Königshof, Martin Lauer, and Christoph Stiller. [2019].
 **“Safe but Not Overcautious Motion Planning under Occlusions and Limited Sensor Range”**
 [[pdf](https://www.mrt.kit.edu/z/publ/download/2019/Naumann2019Occlusions.pdf)]
 
-[Orzechowski, Piotr F, Annika Meyer, and Martin Lauer.] 2018.
+Orzechowski, Piotr F, Annika Meyer, and Martin Lauer. [2018].
 **“Tackling Occlusions & Limited Sensor Range with Set-based Safety Verification”**
 [[pdf](https://arxiv.org/abs/1807.01262)]
 
-[Pierson, Alyssa, Wilko Schwarting, Sertac Karaman, and Daniela Rus.] 2019.
+Pierson, Alyssa, Wilko Schwarting, Sertac Karaman, and Daniela Rus. [2019].
 **“Learning Risk Level Set Parameters from Data Sets for Safer Driving”**
 [-]
 
-[Pool, Ewoud A I, Julian F P Kooij, and Dariu M Gavrila.] 2019.
+Pool, Ewoud A I, Julian F P Kooij, and Dariu M Gavrila. [2019].
 **“Context-Based Cyclist Path Prediction Using Recurrent Neural Networks”**
 [-]
 
-[Pusse, Florian, and Matthias Klusch.] 2019.
+Pusse, Florian, and Matthias Klusch. [2019].
 **“Hybrid Online POMDP Planning and Deep Reinforcement Learning for Safer Self-Driving Cars”**
 [[html](https://www.dfki.de/en/web/research/projects-and-publications/publications/publication/10337/)]
 
-[Queiroz, Rodrigo, Thorsten Berger, and Krzysztof Czarnecki.] 2019.
+Queiroz, Rodrigo, Thorsten Berger, and Krzysztof Czarnecki. [2019].
 **“GeoScenario : An Open DSL for Autonomous Driving Scenario Representation”
 [[pdf](http://www.cse.chalmers.se/~bergert/paper/2019-iv-geoscenario.pdf)]
 
-[Rehder, Tobias et al.] 2019.
+Rehder, Tobias et al. [2019].
 **“Lane Change Intention Awareness for Assisted and Automated Driving on Highways”**
 [[html](https://www.researchgate.net/publication/331913422_Lane_Change_Intention_Awareness_for_Assisted_and_Automated_Driving_on_Highways)]
 
-[Schörner, Philip, T Lars, Jens Doll, and J Z Marius.] 2019.
+Schörner, Philip, T Lars, Jens Doll, and J Z Marius. [2019].
 **“Predictive Trajectory Planning in Situations with Hidden Road Users Using Partially Observable Markov Decision Processes”**
 [[pdf](https://www.ifr.ing.tu-bs.de/static/files/forschung/papers/download_pdf.php?id=739)]
 
-[Schratter, Markus, Maxime Bouton, Mykel J. Kochenderfer, and Daniel Watzenig.] 2019.
+Schratter, Markus, Maxime Bouton, Mykel J. Kochenderfer, and Daniel Watzenig. [2019].
 **“Pedestrian Collision Avoidance System for Scenarios with Occlusions”**
 [[pdf](https://arxiv.org/abs/1904.11566)]
 
-[Schulz, Jens et al. 2019.]
+Schulz, Jens et al. [2019].
 **“Learning Interaction-Aware Probabilistic Driver Behavior Models from Urban Scenarios”**
 [-]
 
-[Si, Wenwen, and Changliu Liu.] 2019.
+Si, Wenwen, and Changliu Liu. [2019].
 **“AGen : Adaptable Generative Prediction Networks for Autonomous Driving”**
 [[html](https://www.ri.cmu.edu/publications/agen-adaptable-generative-prediction-networks-for-autonomous-driving/)]
 
-[Sun, Liting, Wei Zhan, Ching-Yao Chan, and Masayoshi Tomizuka.] 2019.
+Sun, Liting, Wei Zhan, Ching-Yao Chan, and Masayoshi Tomizuka. [2019].
 **“Behavior Planning of Autonomous Cars with Social Perception”**
 [[pdf](https://arxiv.org/abs/1905.00988)]
 
-[Sunberg, Zachary, and Mykel Kochenderfer.] 2017.
-**“Online Algorithms for POMDPs with Continuous State, Action, and Observation Spaces”
+Sunberg, Zachary, and Mykel Kochenderfer. [2017].
+**“Online Algorithms for POMDPs with Continuous State, Action, and Observation Spaces”**
 [[pdf](https://arxiv.org/abs/1709.06196)]
 
-[Ulbrich, Simon et al.] 2015.
+Ulbrich, Simon et al. [2015].
 **“Defining and Substantiating the Terms Scene , Situation , and Scenario for Automated Driving”**
 [[pdf](https://www.ifr.ing.tu-bs.de/static/files/forschung/papers/download_pdf.php?id=859)]
 
-[Ure, N Kemal, M Ugur Yavas, Ali Alizadeh, and Can Kurtulus.] 2019.
+Ure, N Kemal, M Ugur Yavas, Ali Alizadeh, and Can Kurtulus. [2019].
 **“Enhancing Situational Awareness and Performance of Adaptive Cruise Control through Model Predictive Control and Deep Reinforcement Learning”**
 [-]
 
-[Zernetsch, Stefan et al.] 2019.
+Zernetsch, Stefan et al. [2019].
 **“Trajectory Forecasts with Uncertainties of Vulnerable Road Users by Means of Neural Networks**
 [-]
 
