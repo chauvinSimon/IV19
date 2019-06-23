@@ -44,20 +44,39 @@ Disclaimers:
 
 ## Structure
 
+- POMDP
+- RL
+- ML
 - [Uncertainty](#my-multi-word-header)
   - [Sources of uncertainty](#sources-of-uncertainty)
   - [Heteroscedastic Uncertainties](#heteroscedastic-uncertainties)
   - [Unfreezing the Robot under Occlusion](#unfreezing-the-obot-under-occlusion)
   - [Reducing Uncertainty](#reducing-uncertainty)
+- [Generalization in decision modules](#generalization-in-decision-modules)
+  - [Generic scene representation](#generic-scene-representation)
+  - [Scene decomposition methods](#scene-decomposition-methods)
+- [Considering interaction between traffic participants](#considering-interaction-between-traffic-participants)
+  - [Combining prediction and planning](#combining-prediction-and-planning)
+  - [Interaction-aware prediction](#interaction-aware-prediction)
+  - [Negotiation as a next step](#negotiation-as-a-next-step)
+- [Scenarios and Datasets](#scenarios-and-datasets)
+  - [Needs for New Datasets](#needs-for-new-datasets)
+  - [Generating edge-case scenarios](#generating-edge-case-scenarios)
+  - [Common Critical Scenarios](#common-critical-scenarios)
+  - [Defining Scenarios](#defining-scenarios)
 - [Do not Forget Safety](#do-not-forget-safety)
   - [Safety Proof for AD](#safety-proof-for-ad)
   - [RSS](#rss)
   - [Reachability analysis](#reachability-analysis)
   - [Risk Assessment and Safety Checkers](#risk-assessment-and-safety-checkers)
-- [Generalization in decision modules](#generalization-in-decision-modules)
-  - [Generic scene representation](#generic-scene-representation)
-  - [Scene decomposition methods](#scene-decomposition-methods)
-- [Considering interaction between traffic participants](#considering-interaction-between-traffic-participants)
+- Social benefits + acceptance
+- [Demonstrations](#demonstrations)
+  - [Test Day](#test-day)
+  - [Miscellaneous Comments](#miscellaneous-comments)
+  - [Discussions With Some Sponsors](#discussions-with-some-sponsors)
+- [Conclusion](#conclusion)
+- [A Last Word](#a-last-word)
+- [References](#references)
 
 ## Reinforcement Learning
 
@@ -193,7 +212,7 @@ They show how it can be used to reduce uncertainty in the case of **occlusions**
 
 ## Do not Forget Safety
 
-> “10 years ago, it was often said *Safety is not for research. It is for serious production*. Now, research cares about it.”
+> “10 years ago, safety was often said to be for serious production, not for research. Now, it has become a research area.”
 
 > "Academics love to be distracted by a future in which self-driving vehicles make life-or-death decisions while moving at high speed. Whether the robot trolley will crash into the businessman or the older woman is the question of the day." [Source](https://www.nature.com/articles/d41586-019-01473-3)
 
@@ -408,9 +427,9 @@ This brings us to the topic of **interaction-aware reasoning**.
 
 Three points are considered in this section:
 
-- The combination of prediction and planning
-- The different types of prediction methods
-- The
+- The combination of prediction and planning.
+- The consideration of interaction in prediction.
+- The upcoming task of negotiation.
 
 ### Combining prediction and planning
 
@@ -463,15 +482,102 @@ Jack Weast argues that **RSS is adapted to negotiation**, since it defines a saf
 
 I did not hear so much about negotiation. Among of the papers, only one was mentioning the term "negotiation" more than once.
 
-An affair to follow!
+An **affair to follow** (_maybe looking at game theory?_) together with the **promising GAIL- and CVAE-approaches**.
 
-## Scenario, Dataset and Performance Metric decision making
+## Scenarios and Datasets
+
+I was interested in three challenges about scenarios for testing decision modules:
+
+- How to **describe traffic scenarios**? What formalism / language to use?
+- Where to find **frequent crash scenarios**, i.e. where human drivers usually fail?
+- How to **generate critical scenarios** to test edge cases?
+- What **datasets** can be used to learn and test algorithms for prediction and decision making?
+
+These interrogations are addressed in this section.
+
+Before I start, do you know the difference between a *situation*, a *scene* and a *scenario*? How would you define them? These terms are not used consistently in the literature. (Ulbrich et al. 2015) proposed **consistent definitions** for each of these terms of context modelling.
+
+### Defining Scenarios
+
+(Queiroz, Berger, and Czarnecki 2019) deplores the **lack of a language to formally describe test scenarios** that cover the complexity of road traffic situations. This hinders the **reproducibility of tests** and impairs the exchangeability between tools. To address that, they introduced [GeoScenario](https://git.uwaterloo.ca/wise-lab/geoscenario), a domain-specific language for **scenario representation**. This language is built on top of Open Street Maps (OSM) primitives. GeoScenario has a similar goal to the file format [OpenSCENARIO](http://www.openscenario.org/), which **describes dynamic contents** in driving simulation applications and is frequently used together with [OpenDRIVE](http://www.opendrive.org/) for the static content.
+
+| ![JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).](media/pics/queiroz_geoScenario_tool.jpg "JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).")  |
+|:--:|
+| *JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).* |
+
+Another tool, [CommonRoad](https://commonroad.in.tum.de/), was used several times, especially since it implements highway scenario from the [NGSIM US 101 dataset](https://www.fhwa.dot.gov/publications/research/operations/07030/). The goal of this **collection of composable benchmarks for motion planning** on roads is to provide researchers with a means of evaluating and comparing their motion planners.
+
+To **represent the road network** in scenarios, I noticed that [Lanelets maps](https://github.com/phbender/liblanelet) (an open extension of the OSM format) are widely used (e.g. _GeoScenario_ and _CommonRoad_). The [Lanelets2 specification](https://github.com/fzi-forschungszentrum-informatik/lanelet2) is used in (Naumann et al. 2019a) to design a scenario with occlusion. Their experiment is based on a modified version of CommonROAD.
+
+### Common Critical Scenarios
+
+Most frequent crash scenarios can be retrieved from the National Highway Traffic Safety Administration (NHTSA - _pronounced “nit-suh”_) traffic crash data. This [NHTSA pre-crash typology](https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/pre-crash_scenario_typology-final_pdf_version_5-2-07.pdf) is for instance used by the [CARLA AD challenge](https://carlachallenge.org/challenge/nhtsa/) to **test submissions on common critical scenarios**.
+
+This **test evaluation** makes me think of the **driving license exams**. Humans are not tested on all possible scenarios. Instead, **a couple of situations is (randomly) sampled**, and the candidate is assessed on. This is how human driving skills are “validated”.
+
+(Pusse and Klusch 2019) used the [GIDAS](https://www.gidas.org/willkommen/) (German In-Depth Accident Study) analysis of several **thousands of accidents that happened in Germany** to create a **benchmark**. Scenarios are then virtually simulated with the open-source 3D driving simulator [OpenDS](https://opends.dfki.de/).
+
+The [EuroNCAP](https://www.euroncap.com/) test protocol for vulnerable road users (VRUs) is used in (Schratter et al. 2019b). The selected subset covers the most amount of accidents **involving pedestrians**. To avoid overly conservative behaviours, they **augmented the suite** of scenarios with a situation **involving occluded areas** at the side of the road.
+
+| ![Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).](media/pics/schratter_NCAP.PNG "Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).")  |
+|:--:|
+| *Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).* |
+
+Only `75`% of all pedestrian accidents are covered with these crossing scenarios.
+As for NHTSA, edge-case scenarios must be separately generated.
+
+### Generating edge-case scenarios
+
+(Klischat and Althoff 2019) present an approach to **generate critical scenarios** for testing motion planners in complex urban traffic situations.
+
+### Needs for New Datasets
+
+In many papers **real-world experiments are left for future works**. On reason it that it is difficult to **transfer models** derived from simulation or hand-crafted scenarios to real cars.
+
+This raises two needs:
+
+- Need for **more realistic simulators**.
+- Need for **richer traffic datasets** with **critical scenarios**.
+
+I do not addressed the question of **realistic simulators** here. Just mentioning one sentance that came several time at IV19:
+
+> Chicken and Egg problem: validating the simulator is probably harder than validating the algorithm itself.
+
+Real-world driving datasets are crucial for **learning-based approaches** which try to **model human driving styles** and behaviours.
+Their **diversity** and **completeness** are also essential to allow for **generalisation in the prediction and decision models**.
+
+Several collections of **scenarios recorded from real traffic** exist, as reviewed by (Kang, Yin, and Berger 2018) and listed by [scale.ai](https://scale.ai/open-datasets). But most entries **mainly cover perception**.
+
+Works on interactions with **Vulnerable Road Users** (VRUs) (i.e. pedestrians and cyclists) can use Stanford Drone ([SD](http://cvgl.stanford.edu/projects/uav_data/)) dataset, the Tsinghua-Daimler Cyclist ([TDC](http://www.gavrila.net/Datasets/Daimler_Pedestrian_Benchmark_D/Tsinghua-Daimler_Cyclist_Detec/tsinghua-daimler_cyclist_detec.html)) dataset, the Joint Attention for Autonomous Driving ([JAAD](http://data.nvision2.eecs.yorku.ca/JAAD_dataset/)) Dataset or the recently released Eurocity Persons ([ECP](https://eurocity-dataset.tudelft.nl/)) dataset.
+
+For **highway** and **intersection** scenarios, both [HighD](https://www.highd-dataset.com/) and [NGSIM](https://catalog.data.gov/dataset/next-generation-simulation-ngsim-vehicle-trajectories) were frequently mentioned during the workshops and poster sessions.
+Vehicle trajectories in HighD were recorded **using a drone** on German highways, while the NGSIM dataset contains vehicle trajectory data recorded for 45 minutes by **cameras mounted on top of a building** in San Francisco Bay area. If this highway real traffic data is widely used, participants of the SIPD workshop argued they were **_"overused"_** and **_"totally boring"_** since there are **lacking complex manoeuvres**.
+
+I realized that **dataset requirements differ between teams**. Some want **aerial views** for omniscience, especially to extract occlusion. Some prefer **data recorded from a vehicle** as (Pool, Kooij, and Gavrila 2019) that capture context cues to infer intention before planning, such as cyclists raising their arm before taking a turn.
+An illustration of these **particular needs** is that many works presented at IV19 were using their own motion driving simulator or **build their own dataset**. Nevertheless, these individual developments make **experiments hard to reproduce, compare and benchmark**. In addition, most of these hand-crafted datasets are **quite small**, which is not ideal for **training learning-based models**, and do not contain many diverse situations.
+
+The conclusion was clear: we are missing a dataset with **diverse, complex and critical situations** for interaction-aware prediction and decision making.
+
+| ![Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).](media/gif/interaction_dataset_nego.gif "Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).")  |
+|:--:|
+| *Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).* |
+
+Wei Zhan, co-organizer of the SIPD workshop, took the opportunity to **announce the release of a new dataset**, named [INTERSECTION](http://interaction-dataset.com/) dataset, for **socially interactive prediction and decision making**. Here are the main points I have noted:
+
+- It has been recorded from **drones** in diverse locations (e.g. US, Germany, China) with **different driving cultures** and traffic rules for **similar scenarios** (merging, roundabout, etc.).
+- Critical situations such as near-collision situations and slightly colliding accidents are included, which is interesting to **test edge-cases situations**.
+- Another promising feature is that **complex driving behaviours with negotiations** and **inexplicit right-of-way** are covered.
+- Finally, all scenarios come with an [Lanelet2](https://github.com/fzi-forschungszentrum-informatik/Lanelet2)-based HD-map with semantic information. It will also have **occlusion as ground truth** in the model, which is key to test social perception.
+
+Participants were **excited about this new dataset**. As Mykel Kochenderfer noted, it would be nice to also include **very unstructured traffic**. He suggested looking at a place like **India** with more than `17%` of the total world population and see if algorithms from western right-driving countries work there.
 
 ## Learning-based versus Non-Learning-based Approaches for decision making
 
 ## Demonstrations
 
 > “In Theory There Is No Difference Between Theory and Practice.”
+
+### Test Day
 
 Last day was test day! Companies, universities and research institutes were invited to demonstrate technological achievements in AD.
 
@@ -583,7 +689,7 @@ Tom Vöge ended his keynote with a **gentle joke to EasyMile**. He mentioned the
 
 This is a little bit unfair for EasyMile since they are one of the very few to already operate AD vehicles with public. But this punchy conclusion reminded everyone that **we still have a long way to go before AD exit, and become beneficial for the society**.
 
-## A Last Word
+### A Last Word
 
 IV19 was my first scientific symposium. I could meet leading-edge researchers and engineers in my domain of interest while broadening my perspectives on other AD topics.
 
@@ -773,10 +879,6 @@ Zernetsch, Stefan et al. [2019].
 
 ## Temp GIF
 
-| ![INTERACTION dataset](media/gif/interaction_dataset_nego.gif "INTERACTION dataset")  |
-|:--:|
-| *INTERACTION dataset* |
-
 | ![pascal_fantassin.gif](media/gif/pascal_fantassin.gif "pascal_fantassin.gif")  |
 |:--:|
 | *pascal_fantassin.gif* |
@@ -819,10 +921,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *pusse_tree.PNG* |
 
-| ![queiroz_geoScenario_tool.jpg](media/pics/queiroz_geoScenario_tool.jpg "queiroz_geoScenario_tool.jpg")  |
-|:--:|
-| *queiroz_geoScenario_tool.jpg* |
-
 | ![rehder_DBN.PNG](media/pics/rehder_DBN.PNG "rehder_DBN.PNG")  |
 |:--:|
 | *rehder_DBN.PNG* |
@@ -830,10 +928,6 @@ Zernetsch, Stefan et al. [2019].
 | ![schratter_belief.PNG](media/pics/schratter_belief.PNG "schratter_belief.PNG")  |
 |:--:|
 | *schratter_belief.PNG* |
-
-| ![schratter_NCAP.PNG](media/pics/schratter_NCAP.PNG "schratter_NCAP.PNG")  |
-|:--:|
-| *schratter_NCAP.PNG* |
 
 | ![schratter_risk_assessement.PNG](media/pics/schratter_risk_assessement.PNG "schratter_risk_assessement.PNG")  |
 |:--:|
