@@ -44,7 +44,8 @@ Disclaimers:
 
 ## Structure
 
-- POMDP
+- [We are living in a POMDP](#we-are-living-in-a-pomdp)
+  - [We are living in a POMDP](#we-are-living-in-a-pomdp)
 - [Reinforcement Learning](#reinforcement-learning)
   - [Difference Learning / Planning](#difference-learning-/-planning)
   - [Pure RL for decision making in AD is hard](#pure-rl-for-decision-making-in-ad-is-hard)
@@ -86,7 +87,24 @@ Disclaimers:
 - [A Last Word](#a-last-word)
 - [References](#references)
 
-## Partially Observable Markov Decision Process (POMDP)
+## We are living in a POMDP
+
+**_“POMDP”_** stands for _Partially Observable Markov Decision Process_. It is a *model that can be used to formulate the **problem of decision making under uncertainty**. It is therefore very interesting for **AD applications**.
+
+In this first section, I review the different **POMDP implementations** used for IV19, mentioning the **benefits for AD applications of such a formulation** , and compare the different **solving techniques**. The section is structured as follows:
+
+- Comparison of POMDP formulations.
+- Comparison of POMDP solving techniques.
+
+Additional facts
+
+- (Schörner et al. 2019) received the **Best Paper Award** for **“Predictive Trajectory Planning in Situations with Hidden Road Users Using Partially Observable Markov Decision Processes”**.
+- The term _POMDP_ appeared in `4%` of the released papers.
+- Some were using the term _Mixed Observable MDP_ instead of _Partially Observable MDP_ to indicate that a portion of the underlying state is observable (e.g. the ego vehicle information).
+- Many research labs and companies were showing interest in POMDPs. For instance, all participants received in the symposium bag a position offer from Daimler (IV19 sponsor), looking for a position about decision making with experience with POMDP.
+
+The first day I could take part to the workshop _“Prediction and Decision Making for Socially Interactive Autonomous Driving_, shortened [**SIPD**](https://sites.google.com/berkeley.edu/iv19-interaction).
+It was fantastic to have **Mykel Kochenderfer**, from the Department of Aeronautics and Astronautics at Stanford University, since his lab is regarded as one top reference in the topic of **decision making under uncertainty**. He explained how he is trying to **transfer to the automotive domain** what he has learnt from his **works for the aviation domain** such as traffic collision avoidance system. **Looking for solutions in other industries** (e.g. _aviation_ and _pharmaceutic_ sectors) was a recurring idea during the four days. Especially for **safety validation** and for **risk assessment**.
 
 ## Reinforcement Learning
 
