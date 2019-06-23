@@ -57,7 +57,7 @@ Disclaimers:
 - [Generalization in decision modules](#generalization-in-decision-modules)
   - [Generic scene representation](#generic-scene-representation)
   - [Scene decomposition methods](#scene-decomposition-methods)
-- [Interaction](#interaction)
+- [Considering interaction between traffic participants](#considering-interaction-between-traffic-participants)
 
 ## Reinforcement Learning
 
@@ -361,6 +361,8 @@ Mykel Kochenderfer ended his presentation by mentioning two remaining **challeng
 
 Most authors show the relevance of their approaches on one or few scenarios. Usually with a fix number of traffic participants and a specific/arbitrary road layout. I was wondering how these approaches can **generalize to a different road structure**, in diverse scenarios with **a various number of participants**.
 
+A first challenge concerns the **computation**. Scaling to more than two-agent interactions is challenging due to the **Curse of Dimensionality** (_problem caused by the exponential increase in volume associated with adding extra dimensions to Euclidean space_), as introduced by R. Bellman in 1957.
+
 I found two interesting methods:
 
 - Generic scene representation.
@@ -400,9 +402,70 @@ Nevertheless, such decomposition methods **do not capture all the interactions**
 
 This brings us to the topic of **interaction-aware reasoning**.
 
-## Scenario, Dataset and Performance Metric decision making
-
 ## Considering interaction between traffic participants
+
+**Interaction-aware probabilistic decision making** is what most teams are targeting. The idea is to try to predict how ego actions could impact other traffic vehicles. **Predicting likely responses** is at the core of the human ability to navigate through a dense crowd, for instance in a train station. Such a skill is especially important for AD in **cooperative manoeuvres** such as *lane merging* and when considering *Vulnerable Road Users* (VRUs). Moreover, it allows for **negotiation between agents**.
+
+Three points are considered in this section:
+
+- The combination of prediction and planning
+- The different types of prediction methods
+- The
+
+### Combining prediction and planning
+
+Most AD software architectures **separate the prediction module and the planning module**. First, a trajectory of the surrounding vehicles is predicted. These **trajectories are then considered as obstacles** for the ego vehicle in the planning stage. But this separation results in a **reactive behaviour** which **does not consider interaction** during the trajectory planning.
+
+The POMDP formulation can incorporate prediction (forward roll-outs based on the belief state) and planning, which allows to model **interactive behaviour**.
+
+| ![Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).](media/pics/schörner_pomdp.PNG "Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).")  |
+|:--:|
+| *Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).* |
+
+### Interaction-aware prediction
+
+Prediction approaches can be divided into three groups.
+
+- In **Physics-based** models, traffic participants are assumed to keep a **constant velocity** (CV) or a **constant acceleration** (CA) for the next time step. The state of the observed vehicle can be **extrapolated** using kinematic *CA* or *CV* models. This usually works for **short horizons** (<`1s`) where **interaction does not play an important role**.
+- In **Manoeuvre-based** models, traffic participants are assumed to execute their intended maneuvers independently from other traffic. The task is to try to infer the underlying manoeuvre among a finite set of discrete manoeuvres (e.g. lane keeping or lane change). The past trajectory or vehicle features are used for this classification problem. Again, interactions are not considered.
+- In **Interaction-aware** models, future motion of each vehicle is assumed to be **influenced by other traffic participants**. An optimal predicted scene can be found by **minimizing the risk for all** the traffic participants. Such approaches provide a more reliable long-term prediction since, among other, they work on a symbolic level.
+
+Several interaction-aware models were presented at IV19. To be honest, prediction is not my expertise and I found most related papers not trivial to understand. Here is was I will remember.
+
+(Diehl et al. 2019) proposes to use Graph Neural Network (GNN). Interactions are modelled as directed edges leading from the up to 8 neighbouring vehicles to the ego vehicle.
+
+| ![Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).](media/pics/diehl_interaction_graph.PNG "Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).")  |
+|:--:|
+| *Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).* |
+
+While many were using neural networks, a **Dynamic Bayesian Network** (DBN) were used by (Pool, Kooij, and Gavrila 2019). They use the concept of **_environment context cues_** to model the interaction between the cyclist and the ego vehicle. For instance, by indicating whether the arm of the cyclist is raised.
+
+I noticed that two approaches were inspiring several IV19 works:
+
+- The **social LSTM framework** for human trajectory predictions from (Alahi et al. 2016). Each trajectory is modelled as one LSTM and the different LSTMs **share information through a social pooling layer**.
+- The **_DESIRE_** concept from (Lee et al. 2017). Trajectories are first generated using a **conditional variational auto-encoder** (CVAE), then ranked and refined using inverse optimal control (IOC) and finally used to build the scene context, encoded with a CNN.
+
+My next observation was that **conditional variational auto-encoder** (CVAE) and **generative adversarial imitation learning** (GAIL) were largely used for interaction-prediction.
+
+**CVAE** was used for instance in (Hu, Zhan, and Tomizuka 2019). The idea is to **jointly predict motions for pairs of interacting agents**. But not all vehicles are interacting with each other. This idea therefore to start by identifying the interacting pairs. To do that, intention probabilities are derived for each vehicle. Then, for each pair of vehicles, reference paths are used to **determine if a conflict point exists**. If not, their future trajectories will be independent from each other. For interacting pairs, their **joint motions are jointly predicted using a CVAE**.
+
+This idea of **first identifying interation** and **then predict trajectories** is also found in (J. Li et al. 2019). They introduce a **hierarchical** structure for Coordination and Trajectory Prediction System (CTPS). First, a **macro-level recognizes the coordination** between the multiple interactive agents. This information, together with on historical states and the context information, is used by the **micro-level pattern prediction module** to generate motion hypotheses.
+
+(Si and Liu 2019) shows that **GAIL** methods can learn interactive models. The approach, known as AGen (Adaptive Generative Model), is based on the learning method **PS-GAIL** (Parameter Sharing GAIL). However, it is not able to consider individual differences in the behaviour of each vehicle. PS-GAIL is therefore combined with RLS-PAA (Recursive Least Square Parameter Adaptation Algorithm) to achieve a better **adaptation to the multi-actor situation**.
+
+I was not familiar with GAIL before and was more interested by **IRL-based methods** to learn from expert demonstration. But while IRL is trying to infer the underlying MDP **reward function**, it does not give the policy directly. The **optimal policy has to be derived afterwards**. Moreover, IRL-based methods require to model the problem as an MDP. Which is not easy. From this point of view, GAIL offers a valuable advantage.
+
+### Negotiation as a next step
+
+>> Merging is about creating space versus waiting for full space.
+
+Jack Weast argues that **RSS is adapted to negotiation**, since it defines a safety envelop around the vehicle that can be used to **test how the others will respond**. For complex interactive scenarios such as _merging_, _overtaking_ and _yielding_, the vehicle can go right to the limit of the envelop, whose size is defined by the **risk tolerance**.
+
+I did not hear so much about negotiation. Among of the papers, only one was mentioning the term "negotiation" more than once.
+
+An affair to follow!
+
+## Scenario, Dataset and Performance Metric decision making
 
 ## Learning-based versus Non-Learning-based Approaches for decision making
 
@@ -728,10 +791,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *chatrenet_automation_vs_fatalities.PNG* |
 
-| ![diehl_interaction_graph.PNG](media/pics/diehl_interaction_graph.PNG "diehl_interaction_graph.PNG")  |
-|:--:|
-| *diehl_interaction_graph.PNG* |
-
 | ![folkers_attention.PNG](media/pics/folkers_attention.PNG "folkers_attention.PNG")  |
 |:--:|
 | *folkers_attention.PNG* |
@@ -767,10 +826,6 @@ Zernetsch, Stefan et al. [2019].
 | ![rehder_DBN.PNG](media/pics/rehder_DBN.PNG "rehder_DBN.PNG")  |
 |:--:|
 | *rehder_DBN.PNG* |
-
-| ![schörner_pomdp.PNG](media/pics/schörner_pomdp.PNG "schörner_pomdp.PNG")  |
-|:--:|
-| *schörner_pomdp.PNG* |
 
 | ![schratter_belief.PNG](media/pics/schratter_belief.PNG "schratter_belief.PNG")  |
 |:--:|
