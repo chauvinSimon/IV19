@@ -7,8 +7,8 @@
 |:--:|
 | *2019 Intelligent Vehicle Symposium* |
 
-```TL; DR
-
+```bash
+TL;DR:
 - Look how other industries (e.g. aviation) deal with risk assessment and decision making under uncertainty.
 - Abandon the *Vision Zero* buzzword.
 - Stop separating prediction and planning and use POMDP formulations.
@@ -53,9 +53,6 @@ Disclaimers:
 ## Do not foget Safety
 
 > “10 years ago, it was often said *Safety is not for research. It is for serious production*. Now, research cares about it.”
-
-[Functional safety](https://en.wikipedia.org/wiki/Functional_safety) was a new topic for me. I guess I was not the only one:
-
 > "Academics love to be distracted by a future in which self-driving vehicles make life-or-death decisions while moving at high speed. Whether the robot trolley will crash into the businessman or the older woman is the question of the day." [Source](https://www.nature.com/articles/d41586-019-01473-3)
 
 This topic was new to me. I have heard of:
@@ -71,7 +68,7 @@ One big question was: _**"How to prove safety in AD?"**_
 
 This question was addressed by Jack Weast, Vice President at Mobileye, in his keynote “An Open, Transparent, Industry-driven Approach to AV Safety”.
 
-| ![Keynote by Jack Weast. Source: author provided.](media/pics/weast_rss.jpg "Keynote by Jack Weast. Source: author provided.")  |
+| ![Keynote by Jack Weast. Source: author provided.](media/pics/weast_keynote.jpg "Keynote by Jack Weast. Source: author provided.")  |
 |:--:|
 | *Keynote by Jack Weast. Source: author provided.* |
 
@@ -144,7 +141,42 @@ Finally, I have retained two main announcements from RSS:
 |:--:|
 | *First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several location: within the behaviour planner, around the planning module or outside the AD (CARLA example).* |
 
+### Reachability analysis
 
+During the three days of workshop and conference, I heard a lot about **reachability analysis** and **reachability sets**. These concepts were new to me.
+
+During the [SIPD workshop](https://sites.google.com/berkeley.edu/iv19-interaction), Katherine Driggs-Campbell showed how to make **set-based prediction**. She distinguished between **two approaches** to modelling human behaviour: *informative* and *robust* methods. Using models learnt from a dataset, their method outputs so-called *empirical reachable sets*. The idea is to **reject unlikely samples up to some probability threshold**, in order to balance between *robustness* and *informativeness*.
+
+| ![Difference between **Informative** and **Robust** approaches for human behaviour modelling. Source : (Driggs-Campbell et al. 2017).](media/pics/driggs_informative_vs_robust.PNG "Difference between **Informative** and **Robust** approaches for human behaviour modelling. Source : (Driggs-Campbell et al. 2017).")  |
+|:--:|
+| _Difference between **Informative** and **Robust** approaches for human behaviour modelling. Source : (Driggs-Campbell et al. 2017)._ |
+
+That reminds me the [concept](https://www.youtube.com/watch?v=o9A4e7zopu8) of **precision** (*type I error* leading to *false positives*) and **recall** (*type II error* leads to *false negatives*) used in **object detection**.
+
+When asked about future trajectory, one could draw a **very large set that is guaranteed to encapsulate all the possible trajectories**. This will present a **high recall** but will probably be **over-conservative** and not applicable for high speeds. Another option could be to **restrict the prediction to one single trajectory**, potentially with some uncertainty. This second method will offer a **high precision** but will be meet difficulties to guarantee safety.
+
+Besides prediction, **reachable sets can be used in motion planning** and collision avoidance, as demonstrated in (Hartmann and Watzenig 2019). The **maximal jerk** in the motion of pedestrians is predicted iteratively using Gaussian processes. From these **physical constraints**, a **reachable set on positions** can be formulated and incorporated in the motion planning. It is finally solved with Mixed Integer Linear Programming (MILP).
+
+| ![Using reachability analysis for motion planning. Source: (Hartmann and Watzenig 2019)](media/pics/hartmann_sets_for_planning.PNG "Using reachability analysis for motion planning. Source: (Hartmann and Watzenig 2019)")  |
+|:--:|
+| *Using reachability analysis for motion planning. Source: (Hartmann and Watzenig 2019)* |
+
+Another example I liked was presented by (Pierson et al. 2019), where another type of set, *risk level sets*, is used to safely navigate **congested environments**. The authors define a cost function and tune its parameters to fit the human data, based on the NGSIM and highD. Thresholds corresponding to low, medium, and high-risk driving are also learnt from these highway recordings.
+These thresholds can be used for **planning with different supported risk**. The vehicle will seek a **path in the region when the estimated risk is below a certain threshold**. For instance, a low-risk agent will have a more restricted planning space. As a result, it will make fewer lane changes along the congested highway.
+
+| ![Planning can be based on Congestion quantification and risk assessment for the ego vehicle using risk level sets. Here a high-risk threshold is applied. Source: (Pierson et al. 2019)](media/gif/pierson_risk_sets.gif "Planning can be based on Congestion quantification and risk assessment for the ego vehicle using risk level sets. Here a high-risk threshold is applied. Source: (Pierson et al. 2019)")  |
+|:--:|
+| *Planning can be based on Congestion quantification and risk assessment for the ego vehicle using risk level sets. Here a high-risk threshold is applied. Source: (Pierson et al. 2019)* |
+
+This **risk-based decision making** was for me a paradigm shift. In many works, **criticality of a situation** is estimated using metrics like **time to collision** (TTC). But **evaluating the future situation risk** is probably **more human-like** than TTC-based collision avoidance.
+
+> "Human response to traffic situations depends on their risk assessment and tolerance to risk." Source: (Pierson et al. 2019).
+
+My takeover from all these sets is that active safety and driver modelling are tightly linked. Starting with concerns on safety guarantees, the reachability analysis naturally leads to the definition of solutions for planning and predictions.
+
+I would like to end this section on safety by mentioning other techniques to embed risk assessment in decision modules.
+
+### Risk Assessment and Safety Checkers
 
 ## Scenario, Dataset and Performance Metric decision making
 
@@ -470,10 +502,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *pascal_fantassin.gif* |
 
-| ![pierson_risk_sets.gif](media/gif/pierson_risk_sets.gif "pierson_risk_sets.gif")  |
-|:--:|
-| *pierson_risk_sets.gif* |
-
 ## Temp PICS
 
 | ![akai_hmm_types.png](media/pics/akai_hmm_types.png "akai_hmm_types.png")  |
@@ -496,10 +524,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *diehl_interaction_graph.PNG* |
 
-| ![driggs_informative_vs_robust.PNG](media/pics/driggs_informative_vs_robust.PNG "driggs_informative_vs_robust.PNG")  |
-|:--:|
-| *driggs_informative_vs_robust.PNG* |
-
 | ![esterle_overview.PNG](media/pics/esterle_overview.PNG "esterle_overview.PNG")  |
 |:--:|
 | *esterle_overview.PNG* |
@@ -519,10 +543,6 @@ Zernetsch, Stefan et al. [2019].
 | ![gartner18.jpg](media/pics/gartner18.jpg "gartner18.jpg")  |
 |:--:|
 | *gartner18.jpg* |
-
-| ![hartmann_sets_for_planning.PNG](media/pics/hartmann_sets_for_planning.PNG "hartmann_sets_for_planning.PNG")  |
-|:--:|
-| *hartmann_sets_for_planning.PNG* |
 
 | ![hu_multimodal.PNG](media/pics/hu_multimodal.PNG "hu_multimodal.PNG")  |
 |:--:|
