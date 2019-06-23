@@ -137,6 +137,43 @@ While most of these methods for perception and decision-making **output an uncer
 
 More generally, the **environment representation** based on **probabilistic occupancy grids** used in (Barbier et al. 2019) seems appropriate to capture the perception uncertainty.
 
+### Unfreezing the Robot under Occlusion
+
+A common approach to deal with uncertainty is the **worst-case assumption**. But in highly complex scenarios, this can lead to the issue of *"Freezing Robot"*: uncertainty in future states explodes and the AD vehicle **does not find any valid action**. It stands still.
+
+The POMDP formulation can address this issue. Being a **belief state planning** problem, it allows for **decision making under uncertainty**. (Schörner et al. 2019) use a POMDP to tackle uncertainty in occlusion. Similarly, (Hubmann et al. 2019) presents an **occlusion-aware POMDP** (OCAPOP) showing that:
+
+> "Postponing the decision is not always a bad idea".
+
+The idea is to simulate the potential **field of view** (*fov*) over the complete scenario and consider at the same time the **reachable set** for the vehicles that may be occluded. The reward function motivates an **increase in the _fov_** while **punishing lateral offsets**, which may be **conflicting** e.g. when following a tall vehicle.
+
+The vehicle sometimes decides to **postpone the decision** about crossing the intersection and prefers increasing its _fov_ by **taking a lateral offset to capture more information**. This behaviour, called **"information gathering"**, allows for less conservative behaviour.
+I think one could draw a parallel with the concept of *exploration* / *exploitation* used in RL. But here, this decision is taking when driving. Not during the training phase.
+
+The resulting planner can drive nearly the same trajectories as an **omniscient planner would**.
+
+| ![The AD car wants to turn left. But the other vehicle is occluded by a building (black line with red point). The AD car keeps driving to increase its field of view. It contemplates two trajectories: a _direct left-turn_ (thick blue polyline) and a _backup stopping trajectory_ (thin blue polyline going down). As soon as a real vehicle pops out and is seen, the AD car executes the braking manoeuvre. Source: author provided – recorded during the SIPD workshop.](media/gif/hubmann_occlusion.gif "The AD car wants to turn left. But the other vehicle is occluded by a building (black line with red point). The AD car keeps driving to increase its field of view. It contemplates two trajectories: a _direct left-turn_ (thick blue polyline) and a _backup stopping trajectory_ (thin blue polyline going down). As soon as a real vehicle pops out and is seen, the AD car executes the braking manoeuvre. Source: author provided – recorded during the SIPD workshop.")  |
+|:--:|
+| *The AD car wants to turn left. But the other vehicle is occluded by a building (black line with red point). The AD car keeps driving to increase its field of view. It contemplates two trajectories: a _direct left-turn_ (thick blue polyline) and a _backup stopping trajectory_ (thin blue polyline going down). As soon as a real vehicle pops out and is seen, the AD car executes the braking manoeuvre. Source: author provided – recorded during the SIPD workshop.* |
+
+### Reducing Uncertainty
+
+A first approach to reduce uncertainty consists in **direct communication** between traffic participants.
+
+During his keynote, Christoph Stiller called for more research in **_“Cooperative perception, behaviour and planning”_**. He sees a huge potential to improve safety, reduce emission and increase the traffic flow efficiency.
+
+Another approached, not based on V2V communication, was presented during the SIPD workshop. I really enjoyed this work on behavioural planning presented by (Sun et al. 2019). It introduces the concept of **"Social Perception"**. The idea is to **infer some information** about the environment by **observing the behaviour of other traffic participants**. Two quotes from them:
+
+>> “Human drivers on the road are intelligent agents whose behaviours can not only tell us what they want to do, but also what might have been missed by our own sensors.”
+
+>> “Human participants should be treated not only as dynamic obstacles, but also as distributed sensors that provide via their behaviours additional information about the environment beyond the scope of physical sensors”.
+
+They show how it can be used to reduce uncertainty in the case of **occlusions** or **limited sensor range**.
+
+| ![From the behaviour of the other driver, the ego car can infer and become more confident about the probability of a pedestrian crossing. Source: (Sun et al. 2019).](media/pics/sun_social_perception.PNG "From the behaviour of the other driver, the ego car can infer and become more confident about the probability of a pedestrian crossing. Source: (Sun et al. 2019).")  |
+|:--:|
+| *From the behaviour of the other driver, the ego car can infer and become more confident about the probability of a pedestrian crossing. Source: (Sun et al. 2019).* |
+
 ## Do not foget Safety
 
 > “10 years ago, it was often said *Safety is not for research. It is for serious production*. Now, research cares about it.”
@@ -619,10 +656,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *INTERACTION dataset* |
 
-| ![hubmann_occlusion.gif](media/gif/hubmann_occlusion.gif "hubmann_occlusion.gif")  |
-|:--:|
-| *hubmann_occlusion.gif* |
-
 | ![pascal_fantassin.gif](media/gif/pascal_fantassin.gif "pascal_fantassin.gif")  |
 |:--:|
 | *pascal_fantassin.gif* |
@@ -700,10 +733,6 @@ Zernetsch, Stefan et al. [2019].
 | ![schratter_risk_assessement.PNG](media/pics/schratter_risk_assessement.PNG "schratter_risk_assessement.PNG")  |
 |:--:|
 | *schratter_risk_assessement.PNG* |
-
-| ![sun_social_perception.PNG](media/pics/sun_social_perception.PNG "sun_social_perception.PNG")  |
-|:--:|
-| *sun_social_perception.PNG* |
 
 | ![vöge_keynote.JPG](media/pics/vöge_keynote.JPG "vöge_keynote.JPG")  |
 |:--:|
