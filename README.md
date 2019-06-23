@@ -45,7 +45,11 @@ Disclaimers:
 ## Structure
 
 - POMDP
-- RL
+- [Reinforcement Learning](#reinforcement-learning)
+  - [Difference Learning / Planning](#difference-learning-/-planning)
+  - [Pure RL for decision making in AD is hard](#pure-rl-for-decision-making-in-ad-is-hard)
+  - [Using RL for parameter tuning](#using-rl-for-parameter-tuning)
+  - [Combining Learning and Planning](#combining-learning-and-planning)
 - ML
 - [Uncertainty](#my-multi-word-header)
   - [Sources of uncertainty](#sources-of-uncertainty)
@@ -79,6 +83,75 @@ Disclaimers:
 - [References](#references)
 
 ## Reinforcement Learning
+
+This section is structured as followed:
+
+- Difference Learning / Planning
+- Pure RL for decision making in AD is hard
+- Using RL for parameter tuning
+- Combining Learning and Planning
+
+Interesting facts
+
+- (Folkers, Rick, and Christof 2019) received the **Best Student Paper Award** for _“Controlling an Autonomous Vehicle with Deep Reinforcement Learning”_.
+- The term _reinforcement learning_ appeared in `41` of the released papers (`12`%). Among them, `11` were **presenting an implementation** while the others where referencing RL-related works in the literature review.
+- I did not see anything about **_continuous learning_**, i.e. improvement of the RL approach when exposed to additional real-world experience. Yet this is usually presented as one advantage of RL techniques.
+- No model-based RL? All IV19 RL-based approaches were **model-free**. During the [2019 ICML AD workshop](https://sites.google.com/view/icml2019aiad/talk-abstract-and-speaker-bio), taking place at the same time, Sergey Levine discussed the potential of **model-based RL for AD**. An affair to follow ...
+- **Value-based approaches** were dominant. I counted:
+
+| Count | Method                   |
+| :---: |:------------------------:|
+| 7     | Q-learning-based methods |
+| 2     | PPO                      |
+| 1     | DDPG                     |
+| 1     | NavA3C                   |
+| 0     | Model-based RL           |
+
+### Difference Learning / Planning
+
+The AD decision or AD control can be **formulated as a Markov Decision Process** (MDP), or its extension POMDP with partial observation. There are **two types of methods to solve** it, i.e. to find the optimal policy, depending if the transition and reward models are known or not:
+
+- If the transition and reward models are known, the solving task is referred to as planning.
+  - Planning is attractive since it **does not require any interaction with the MDP environment**. But the **design of a realistic transition model** is challenging. Given some acceleration and steering command, deriving the position of the ego vehicle at the next step is feasible. But defining the responses of other driver to these decisions is way more difficult.
+- If not, it is called (reinforcement) learning.
+  - To collect experience for learning, RL requires an MDP environment to interact with. The environment can be a **simulator** (most approaches) or the **real-world**. [WAYVE](https://wayve.ai/blog/learning-to-drive-in-a-day-with-reinforcement-learning) has demonstrated impressive performance with the later technique. But the problem of **_sample efficiency_**, i.e. the amount of experience the agent needs to generate in an environment during training to reach a certain level of performance, advocate for the **use of a simulator**. This is especially true for **model-free approaches** which need a lot of experience data to derive a good policy. Not to mention the **safety considerations**.
+
+I think it is worth to have this distinction in mind when analysing the different presented algorithms.
+
+### Pure RL for decision making in AD is hard
+
+Although there has been some successful decision making approaches using RL, **model-free techniques**, especially when trained directly on images, are **complex**.
+
+Earlier this year, (J. Chen, Yuan, and Tomizuka 2019) tested three state-of-the-art model-free deep RL algorithms: _DDQN_, _TD3_ and _SAC_. The task was to **navigate through a round-about** and take the third exit. The three approaches where tested `50` times. As shown on their results, **DDQN and TD3 could not reach the goal point on single time**.
+
+| ![Results of model-free RL for a specific task: roundabout handling. Source: (J. Chen, Yuan, and Tomizuka 2019).](media/pics/chen_rl_result.PNG "Results of model-free RL for a specific task: roundabout handling. Source: (J. Chen, Yuan, and Tomizuka 2019).")  |
+|:--:|
+| *Results of model-free RL for a specific task: roundabout handling. Source: (J. Chen, Yuan, and Tomizuka 2019).* |
+
+Even if RL is hard to implement, it could offer a **reasoning longer horizon** and the **ability to solve task that are too complex** for classical rule-based methods.
+(Bouton et al. 2019a) finds that using a **pure RL technique does not enable the agent to act more safely** than when using simple **rule-based methods**. But when the **scenario becomes more complex**, with a flow of cars and pedestrians, the benefit of using RL over a rule-based method become clear.
+
+Among successful approaches, only few report **evaluations on real vehicles**. (Folkers, Rick, and Christof 2019) conducted test on a full-size research vehicle during and show the potential of their RL-based controller for autonomous exploration of a parking lot. It would have been nice to have demonstration form them or from the RL research teams as [WAYVE](https://wayve.ai/blog) during the track-demo day!
+
+### Using RL for parameter tuning
+
+Using RL for decision making is not the only option.
+
+(Ure et al. 2019) used an RL-based approach to **automate the tuning of MPC parameters** for an Adaptive Cruise Control (ACC) system. The DQN net chooses among three sets of parameters: _distance weight_, _acceleration command weight_ and _velocity weight_. These weights are then used in the constrained optimization of the MPC to yield the acceleration command.
+
+This idea of **using RL for automated weight tuning** is also present in (L. Chen et al. 2019). **Proximal Policy Optimization** (PPO) is used to tune the weights of a Pure-Pursuit Proportional Integral Derivative (**PP-PID**) controller.
+
+### Combining Learning and Planning
+
+Earlier that year, (Hoel et al. 2019) presented a tactical decision making that **combines the concepts of planning with MCTS and learning with RL**. It forms a **win-win** situation. On the one hand, the **neural network can bias the sampling** towards the most relevant parts of the search tree. As I understood, the **learnt value function serves as heuristic**. On the other hand, the MCTS improves the **sampling efficiency** of the RL training process. It especially helps it for the _credit assignment_ problem. This combination has been inspired from the success of **AlphaGo Zero**. It was extended to cope with a **continuous state space** (using progressive widening) and to deal with **partial observability**.
+
+| ![A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).](media/pics/pusse_architecture.PNG "A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).")  |
+|:--:|
+| *A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).* |
+
+At IV19, (Pusse and Klusch 2019) introduced a similar approached, named **_HYLEAP_**. The network acts as an **experience-based critic**, estimating the **value function** which is used to **guide the belief tree construction**.
+
+I really like this idea of **combining planning and learning** and expect other examples to follow. Maybe with a car experiment as well...
 
 ## Partially Observable Markov Decision Process (POMDP)
 
@@ -912,10 +985,6 @@ Zernetsch, Stefan et al. [2019].
 | ![joonatan_CVAE.png](media/pics/joonatan_CVAE.png "joonatan_CVAE.png")  |
 |:--:|
 | *joonatan_CVAE.png* |
-
-| ![pusse_architecture.PNG](media/pics/pusse_architecture.PNG "pusse_architecture.PNG")  |
-|:--:|
-| *pusse_architecture.PNG* |
 
 | ![pusse_tree.PNG](media/pics/pusse_tree.PNG "pusse_tree.PNG")  |
 |:--:|
