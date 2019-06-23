@@ -1,6 +1,7 @@
 # My 10 takeaways from the 2019 Intelligent Vehicle Symposium
 
 !!!! WORK IN PROGRESS !!!!
+*If some pictures are not loaded, try to refresh the page.*
 
 | ![2019 Intelligent Vehicle Symposium](media/pics/iv19.jpg "2019 Intelligent Vehicle Symposium")  |
 |:--:|
@@ -12,6 +13,9 @@
 - Abandon the *Vision Zero* buzzword.
 - Stop separating prediction and planning and use POMDP formulations.
 - Combine learning and planning (e.g. MCTS + RL).
+- Interaction-aware planning.
+- Think distribution, not expectation or point-estimate.
+- Generalize with decomposition or image-like states.
 - Some demos were impressive. But far from series production.
 - ... # todo
 ```
@@ -38,13 +42,121 @@ Disclaimers:
 - I mainly focus on the topic of **decision making for AD** (as opposed to perceptions, localisation or control for instance).
 - Many subjects I am discussing are new to me. I really hope I did not misinterpret any concept when referencing to papers. Please notify me if any statement or interpretation is incorrect!
 
-## part 0
+## Reinforcement Learning
 
-## part 1
+## Partially Observable Markov Decision Process (POMDP)
+
+## Social Benefits of AD
+
+## Uncertainty
+
+## Do not foget Safety
+
+> “10 years ago, it was often said *Safety is not for research. It is for serious production*. Now, research cares about it.”
+
+[Functional safety](https://en.wikipedia.org/wiki/Functional_safety) was a new topic for me. I guess I was not the only one:
+
+> "Academics love to be distracted by a future in which self-driving vehicles make life-or-death decisions while moving at high speed. Whether the robot trolley will crash into the businessman or the older woman is the question of the day." [Source](https://www.nature.com/articles/d41586-019-01473-3)
+
+This topic was new to me. I have heard of:
+
+- Safety Validation for AD
+- RSS
+- Model Checkers
+- Reachability sets
+
+### Safety Proof for AD
+
+One big question was: _**"How to prove safety in AD?"**_
+
+This question was addressed by Jack Weast, Vice President at Mobileye, in his keynote “An Open, Transparent, Industry-driven Approach to AV Safety”.
+
+| ![Keynote by Jack Weast. Source: author provided.](media/pics/weast_rss.jpg "Keynote by Jack Weast. Source: author provided.")  |
+|:--:|
+| *Keynote by Jack Weast. Source: author provided.* |
+
+What do you want to mean by *safety*? Let us start by the definition _"AV is safe if it_ **doesn’t experience collisions**_"_.
+
+**A first intuition could be to use statistics**. For instance, with an **expectation over the distance between two accidents**. That could be computed using the total number of accidents and the total distance travelled. But only considering the statistical argument is not a good metric, since **it does not capture the scenario complexity**. One kilometre driven in Paris, on narrow streets, with all these crazy electric scooters and reckless pedestrians cannot be fairly compared with drives on large and straight highways. And the Paris example seems easy compared to some situations in India. Not to mention the weather and day/night conditions.
+
+A second intuition could be to just **make the vehicle follow the traffic rules and prove it always abides to them**. But following the rules is not enough to avoid a crash. Moreover, it can be sometimes **socially accepted and safer to break a traffic rule**. For instance, when crossing a solid line to takeover a badly-parked vehicle.
+
+What about **testing the vehicle on many critical scenarios**? Potentially using simulation. Thousands of thousands of scenarios can be generated and tested. But **the world is complex, and humans are imaginative**. There will always be yet another critical scenario that has not been considered before.
+
+Another idea could be to **try to avoid crashes** at all cost. And to (try to) prove it to the authorities. But this is not realistic. Imagine you are surrounded by cars that are coming together close to you. **Avoiding accidents is just impossible**.
+
+| ![Mobileye RSS and Nvidia SFF agree: an absolute safety is impossible as long as AVs share the road with human drivers. [Source](https://newsroom.intel.com/wp-content/uploads/sites/11/2019/03/Intel-SFFvsRSS-table.pdf).](media/pics/rss_absolute_safety_impossible.PNG "Mobileye RSS and Nvidia SFF agree: an absolute safety is impossible as long as AVs share the road with human drivers. [Source](https://newsroom.intel.com/wp-content/uploads/sites/11/2019/03/Intel-SFFvsRSS-table.pdf).")  |
+|:--:|
+| *Mobileye RSS and Nvidia SFF agree: an absolute safety is impossible as long as AVs share the road with human drivers. [Source](https://newsroom.intel.com/wp-content/uploads/sites/11/2019/03/Intel-SFFvsRSS-table.pdf).* |
+
+> Another definition is hence suggested: _"AV is safe if it_ **doesn’t cause collisions**_"_.
+
+Instead of defining scenarios in advance or trying to avoid all collisions, Jack Weast suggested to **put constraints on the driving policy**, i.e. the decision making system, which leads to the introduction of **RSS**.
+
+### RSS
+
+Intel, as the Platinum sponsor, could advertise the mathematical model for AV safety named [Responsibility-Sensitive Safety](https://www.mobileye.com/responsibility-sensitive-safety/) (RSS) developed by its subsidiary Mobileye. The main idea of RSS is **to mimic human judgement using math formulation**. It acts like a **safety checker on the proposed actions** and can let them proceed on the actuators or not.
+
+While RSS starts to become popular among the AD community, it seems it has already [inspired Nvidia](https://newsroom.intel.com/editorials/innovation-requires-originality/#gs.kiu5nl). 😉
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/EceAB6TUYzo/0.jpg)](http://www.youtube.com/watch?v=EceAB6TUYzo "Introduction to RSS")
+
+First, RSS is based on the **notion of "blame"**: *ensure that the AV does not initiate any dangerous situation*.
+
+This concept is implemented in (Naumann et al. 2019) for motion planning under occlusions, where two safety conditions are defined.
+
+- (C1) Being in a **safe state before** the conflict zone.
+- (C2) **Safely passing** the conflict zone.
+
+Only trajectories that fulfil both can be selected, as stated by their authors:
+
+> If we cannot ensure a safe trajectory through a conflict zone, we must ensure the reachability of a safe state before it.
+
+I will remember a second idea of RSS: the model of **human implicit rules**.
+
+Humans follow two kind of rules:
+
+- **Explicit rules**. Such as *“should stop at a red light”*.
+- **Implicit rules**. For instance, the US law says that you should drive at a *speed that is appropriate to the traffic condition*.
+
+RSS model human implicit rules with **five principles**.
+
+| ![The five RSS principles meant to formularize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided.](media/pics/rss_principles.jpg "The five RSS principles meant to formularize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided.")  |
+|:--:|
+| *The five RSS principles meant to formularize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided.* |
+
+In addition to *concept of blame* and the *five human implicit rules*, I noted that **the RSS checker is based on parametrized models**. This can be shown by the presence of equations on the above picture (sorry - it is hard to see). This parametrization offers opportuinities and challenges.
+
+- **Driving is cultural**. Regulators and governments can **plug in different numbers**, based on what they want. RSS can be **used as a metric**.
+- But **estimating the RSS parameters can be complicated**. How would you estimate the **maximum braking capability** of the vehicle in front of view? The same as yours? The average on the market? What if it is a sport car with higher braking capabilities? This value, usually denoted by `β max`, plays a significant role in the model since it conditions the safe gap distance.
+
+| ![Presentation of AD-RSS-LIB. Source: author provided.](media/pics/weast_rss_lib.jpg "Presentation of AD-RSS-LIB. Source: author provided.")  |
+|:--:|
+| *Presentation of AD-RSS-LIB. Source: author provided.* |
+
+Finally, I have retained two main announcements from RSS:
+
+- First, RSS will use the **KITTI dataset to infer RSS parameters** that best fit to the recorded human drivers. It made me think of Inverse RL approaches which aim at finding the reward function of an MDP, given some optimal demonstration. This will be particularly useful to offer a **more realistic** (yet German specific) model. But the question of `β max` will still remain.
+- IV19 was the opportunity for Jack Weast to mention the release of a [library](https://intel.github.io/ad-rss-lib/) that provides a C++ implementation of RSS. It comes with support for integration with Baidu Apollo and CARLA.
+
+
+| ![First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several location: within the behaviour planner, around the planning module or outside the AD (CARLA example).](media/pics/rss_lib.jpg "First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several location: within the behaviour planner, around the planning module or outside the AD (CARLA example).")  |
+|:--:|
+| *First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several location: within the behaviour planner, around the planning module or outside the AD (CARLA example).* |
+
+
+
+## Scenario, Dataset and Performance Metric decision making
+
+## Generalization in decision modules
+
+## Considering interaction between traffic participants
+
+## Learning-based versus Non-Learning-based Approaches for decision making
 
 ## Demonstrations
 
-> “In Theory There Is No Difference Between Theory and Practice” – an engineer.
+> “In Theory There Is No Difference Between Theory and Practice.”
 
 Last day was test day! Companies, universities and research institutes were invited to demonstrate technological achievements in AD.
 
@@ -86,9 +198,9 @@ The European project [AutoMate](http://www.automate-project.eu/) project demonst
 
 I found a little bit impressive to drive at 70 km/h on a countryside-like road with the AD mode.
 
-| ![AD system asking for human collaboration when "approaching" *(we were still far)* a roundabout. Source: author provided.](media/gif/automate_take_over.gif "AD system asking for human collaboration when "approaching" *(we were still far)* a roundabout. Source: author provided.")  |
+| ![AD system asking for human collaboration when "approaching" a roundabout. Source: author provided.](media/gif/automate_take_over.gif "AD system asking for human collaboration when "approaching" a roundabout. Source: author provided.")  |
 |:--:|
-| *AD system asking for human collaboration when "approaching" *(we were still far)* a roundabout. Source: author provided.* |
+| *AD system asking for human collaboration when "approaching" a roundabout. Source: author provided.* |
 
 This demonstration raises questions about the cooperation between human driver and the autopilot. Here, the driver cannot be described as “distracted”. He was paying much attention and could therefore quickly take over.
 
@@ -444,14 +556,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *rehder_DBN.PNG* |
 
-| ![rss_lib.jpg](media/pics/rss_lib.jpg "rss_lib.jpg")  |
-|:--:|
-| *rss_lib.jpg* |
-
-| ![rss_principles.jpg](media/pics/rss_principles.jpg "rss_principles.jpg")  |
-|:--:|
-| *rss_principles.jpg* |
-
 | ![schörner_pomdp.PNG](media/pics/schörner_pomdp.PNG "schörner_pomdp.PNG")  |
 |:--:|
 | *schörner_pomdp.PNG* |
@@ -491,10 +595,6 @@ Zernetsch, Stefan et al. [2019].
 | ![weast_keynote.jpg](media/pics/weast_keynote.jpg "weast_keynote.jpg")  |
 |:--:|
 | *weast_keynote.jpg* |
-
-| ![weast_rss.jpg](media/pics/weast_rss.jpg "weast_rss.jpg")  |
-|:--:|
-| *weast_rss.jpg* |
 
 | ![zernetsch_uncertainty_in_prediction.PNG](media/pics/zernetsch_uncertainty_in_prediction.PNG "zernetsch_uncertainty_in_prediction.PNG")  |
 |:--:|
