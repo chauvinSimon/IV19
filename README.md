@@ -50,7 +50,11 @@ Disclaimers:
   - [Pure RL for decision making in AD is hard](#pure-rl-for-decision-making-in-ad-is-hard)
   - [Using RL for parameter tuning](#using-rl-for-parameter-tuning)
   - [Combining Learning and Planning](#combining-learning-and-planning)
-- ML
+- [Learning-based versus Non-Learning-based Approaches](#learning-based-versus-non-Learning-based-approaches)
+  - [Benefits of the Learning / Non-Learning Combination](#benefits-of-the-learning-/-non-learning-combination)
+  - [Learning-based Methods Now used in Prediction](#learning-based-methods-now-used-in-prediction)
+  - [Interpretability is not an Option](interpretability-is-not-an-option)
+  - [In Validation Process](in-validation-process)
 - [Uncertainty](#my-multi-word-header)
   - [Sources of uncertainty](#sources-of-uncertainty)
   - [Heteroscedastic Uncertainties](#heteroscedastic-uncertainties)
@@ -81,6 +85,8 @@ Disclaimers:
 - [Conclusion](#conclusion)
 - [A Last Word](#a-last-word)
 - [References](#references)
+
+## Partially Observable Markov Decision Process (POMDP)
 
 ## Reinforcement Learning
 
@@ -145,7 +151,7 @@ This idea of **using RL for automated weight tuning** is also present in (L. Che
 
 Earlier that year, (Hoel et al. 2019) presented a tactical decision making that **combines the concepts of planning with MCTS and learning with RL**. It forms a **win-win** situation. On the one hand, the **neural network can bias the sampling** towards the most relevant parts of the search tree. As I understood, the **learnt value function serves as heuristic**. On the other hand, the MCTS improves the **sampling efficiency** of the RL training process. It especially helps it for the _credit assignment_ problem. This combination has been inspired from the success of **AlphaGo Zero**. It was extended to cope with a **continuous state space** (using progressive widening) and to deal with **partial observability**.
 
-| ![A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).](media/pics/pusse_architecture.PNG "A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).")  |
+| ![A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).](media/pics/pusse_tree.PNG "A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).")  |
 |:--:|
 | *A RL-based learnt value function is used to expand the MCTS belief tree when solving the POMDP. Source: (Pusse and Klusch 2019).* |
 
@@ -153,7 +159,84 @@ At IV19, (Pusse and Klusch 2019) introduced a similar approached, named **_HYLEA
 
 I really like this idea of **combining planning and learning** and expect other examples to follow. Maybe with a car experiment as well...
 
-## Partially Observable Markov Decision Process (POMDP)
+## Learning-based versus Non-Learning-based Approaches
+
+While machine learning is massively used for **perception**, its impact on **decision** and **control** has been limited due to reservations about **interpretability and reliability**.
+
+Non-learning-based systems are mostly interpretable and seem to work on non-complex scenarios. But:
+
+- **Rule design is so painful!**
+- They can impose **strong modelling assumptions** (DBN).
+- They fail in **complex scenarios** (IDM).
+- Contrary to some RL approaches, they do not offer **continuous improvement**.
+
+On the other hand, learning-based approaches have shown promising results. But:
+
+- They are mainly **non-explanatory** and **non-interpretable**.
+- They require some **data** to train (annotated in the case of supervised learning) or some **environment** to interact with (reinforcement learning).
+- They can **be hard to adjust manually**. For instance, **fixing MPC errors on the fly** easier than fixing a model-free RL, which requires **tuning the reward function** and then restarting the training.
+
+My main take-away is that, as for the reinforcement learning section, a **hybrid framework that combines both learning-based and non-learning-based methods** seems to be the way to go.
+
+The following is structure as follows:
+
+- Benefits of the Learning / Non-Learning Combination
+- Learning-based Methods Now used in Prediction
+- Interpretability is not an Option
+- In Validation Process
+
+### Benefits of the Learning / Non-Learning Combination
+
+This **need for such combination** is illustrated in (Schulz et al. 2019). A probabilistic mapping from context and route intention to action distribution is learnt with deep neural networks. The benchmark include a non-learnt approach. They show that for **short-term predictions** of up to around `2` seconds, all the **learning-based models outperform the rule-based action model**. But the rule-based model becomes **more accurate for predictions with very long horizons**, exceeding `15s`.
+
+The reason is that the rule-based system is designed to be **attracted by the centre of the lane**. Hence the vehicle will always stay close to the centreline. On the opposite, **prediction errors can accumulate** for the learning-based models by **recursively making one-step ahead prediction**. And once the cumulative error gets too high, the **features determined during forward simulation** are **not represented within the training data** anymore.
+
+It reminds me the issue of _drift_ in imitation learning, when error accumulates fast in a trajectory, and this **brings the agent into situations that it never dealt with before** (_cascade errors_). A common solution it then to use _Dataset Aggregation_ methods like DAgger. Or in this case maybe to **combine the rule-based with the learning-based model**.
+
+I have listed other example of successful combinations in the RL sections. The benefits can relate to the **generalization capability**, the **interpretability gain** or the **safety**. Here is another example.
+
+(Schratter et al. 2019a) combine a POMDP planner with an Autonomous Emergency Braking (AEB) system. In scenarios with occlusion, the **POMDP planner enables the system to anticipate this uncertainty** and to prevent an emergency stop. In **parallel**, the AEB system runs at a **higher frequency and intervenes** with a strong brake intervention **when a collision is unavoidable**. The resulting combination can pass obstacles faster than a sole POMDP, while avoiding all collisions.
+
+### Learning-based methods now used in prediction
+
+Other learning-based approaches to **replicate the behaviour of a non-learning-based methods** such as probabilistic or  kinematics-based approaches. And they show promising results, especially in **high complex interactions**.
+
+For instance, (Joonatan and Folkesson 2019) use Conditional Variational Auto Encoders (CVAEs) to show that deep-learning approaches can replicate and **outperform classic probabilistic behaviour predictors** like DBNs. The idea is to learn a **distribution as a latent representation** which can then be **sampled** to generate possible future trajectories. In this case, the unit Gaussian prior is sampled as the latent representation. One advantage is that the predicted manoeuvres can be **approximated by sampling** without the need for computationally expensive purely Bayesian approaches.
+
+| ![CVAE network used for prediction. At inference time, the unit Gaussian prior is sampled as the latent representation and concatenated with the conditioned input to produce likely outcomes of the input scenario. Source: (Joonatan and Folkesson 2019).](media/pics/joonatan_CVAE.png "CVAE network used for prediction. At inference time, the unit Gaussian prior is sampled as the latent representation and concatenated with the conditioned input to produce likely outcomes of the input scenario. Source: (Joonatan and Folkesson 2019).")  |
+|:--:|
+| *CVAE network used for prediction. At inference time, the unit Gaussian prior is sampled as the latent representation and concatenated with the conditioned input to produce likely outcomes of the input scenario. Source: (Joonatan and Folkesson 2019).* |
+
+(Y. Li et al. 2019) propose a review of the **learning-based approaches for pedestrian trajectory prediction**.
+In their conclusion, the authors suggest investigating the idea of a **unified framework that combines _Seq2Seq_ models** (learning-based) with **probabilistic graphical models**. Again, a fusion seems beneficial.
+
+### Interpretability is not an option
+
+In their prediction framework for driver’s manoeuvre intention, (Rehder et al. 2019) note that **Bayesian network** (BN) is a white box model, and that contrary to neural networks, model’s parameters are **human interpretable** and **manually adjustable** as needed.
+
+It reminded me the work of (Koenig, Rehder, and Hohmann 2017), who **preferred to use BNs due to the high safety demands in AD**, even though they were **outperformed by DNN in some of their experiments**.
+
+(Akai et al. 2019) also recognize that deep learning-based modelling has become popular, but they **prefer to focus on more explanatory modelling methods**. For their work on driving behaviour, they use an autoregressive input-output HMM (**AIOHMM**). However, they note that the descriptive and extraction abilities of the HMM-based methods for complex nonlinear relations are **not higher than that of the deep learning-based methods**. In their conclusion, the authors mention the benefits that a combination could have.
+
+| ![The vanilla HMM (a) is extended to handle past and input information for driving behaviour modelling. Input variables are represented by x, hidden states by z while y denotes the observable variables. Source: (Akai et al. 2019).](media/pics/akai_hmm_types.png "The vanilla HMM (a) is extended to handle past and input information for driving behaviour modelling. Input variables are represented by x, hidden states by z while y denotes the observable variables. Source: (Akai et al. 2019).")  |
+|:--:|
+| *The vanilla HMM (a) is extended to handle past and input information for driving behaviour modelling. Input variables are represented by x, hidden states by z while y denotes the observable variables. Source: (Akai et al. 2019).* |
+
+Several methods are proposed to **increase or regain interpretability** of learning-based approaches.
+
+After training a RL agent with PPO, (Folkers, Rick, and Christof 2019) compute an **attention map of the actor-critic network** to evaluate **what parts of it are most important**. It can be seen that high attention is paid to the agent’s **immediate surrounding** as well as to important points in the long term such as the **corner**, where it must turn around, or the surrounding of the target.
+
+| ![Attention map. Source (Folkers, Rick, and Christof 2019).](media/pics/folkers_attention.PNG "Attention map. Source (Folkers, Rick, and Christof 2019).")  |
+|:--:|
+| *Attention map. Source (Folkers, Rick, and Christof 2019).* |
+
+(Hu, Zhan, and Tomizuka 2019) demonstrate how to extract interpretability from their **prediction-based CVAE**. Conditional VAE is a **latent variable generative model** that can learn a factored, low-dimensional representation of an input scene. When plotting the **learnt latent space**, the two motion patterns (`pass`/`yield`) could be somehow distinguished. Moreover, they show that the generating trajectories can be explained by the **location of generative latent variable**. For instance, they fix one component of the latent space while decreasing the second one. This causes the second car to increase its speed and shifts from yielding the first car to passing it.
+
+### In Validation Process
+
+While we do not want to have a **GAIL-based agent generating the policy** of the autonomous vehicle, it can serve for **simulation and validation purposes**. Especially for the policy of other traffic participants in simulation. It does **not need to be 100% safe** or interpretable. And it can even find bugs in the hand designed engineering system. The learning can be done **relatively fast** using naturalistic datasets to **model the most likely behaviour**. And it does not require much parameter tuning. Moreover, obtaining a mean behaviour does not need much data.
+
+But in validation, it is important to also build model to estimate **low-probability events** that can lead to failures. And this is where **expert knowledge** (non-learnt) is extremely useful.
 
 ## Social Benefits of AD
 
@@ -644,8 +727,6 @@ Wei Zhan, co-organizer of the SIPD workshop, took the opportunity to **announce 
 
 Participants were **excited about this new dataset**. As Mykel Kochenderfer noted, it would be nice to also include **very unstructured traffic**. He suggested looking at a place like **India** with more than `17%` of the total world population and see if algorithms from western right-driving countries work there.
 
-## Learning-based versus Non-Learning-based Approaches for decision making
-
 ## Demonstrations
 
 > “In Theory There Is No Difference Between Theory and Practice.”
@@ -958,17 +1039,9 @@ Zernetsch, Stefan et al. [2019].
 
 ## Temp PICS
 
-| ![akai_hmm_types.png](media/pics/akai_hmm_types.png "akai_hmm_types.png")  |
-|:--:|
-| *akai_hmm_types.png* |
-
 | ![chatrenet_automation_vs_fatalities.PNG](media/pics/chatrenet_automation_vs_fatalities.PNG "chatrenet_automation_vs_fatalities.PNG")  |
 |:--:|
 | *chatrenet_automation_vs_fatalities.PNG* |
-
-| ![folkers_attention.PNG](media/pics/folkers_attention.PNG "folkers_attention.PNG")  |
-|:--:|
-| *folkers_attention.PNG* |
 
 | ![folkers_hybrid_input.PNG](media/pics/folkers_hybrid_input.PNG "folkers_hybrid_input.PNG")  |
 |:--:|
@@ -982,13 +1055,9 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *hubmann_contruction_belief_tree.PNG* |
 
-| ![joonatan_CVAE.png](media/pics/joonatan_CVAE.png "joonatan_CVAE.png")  |
+| ![pusse_architecture.PNG](media/pics/pusse_architecture.PNG "pusse_architecture.PNG")  |
 |:--:|
-| *joonatan_CVAE.png* |
-
-| ![pusse_tree.PNG](media/pics/pusse_tree.PNG "pusse_tree.PNG")  |
-|:--:|
-| *pusse_tree.PNG* |
+| *pusse_architecture.PNG* |
 
 | ![rehder_DBN.PNG](media/pics/rehder_DBN.PNG "rehder_DBN.PNG")  |
 |:--:|
