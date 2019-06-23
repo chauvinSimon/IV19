@@ -42,6 +42,23 @@ Disclaimers:
 - I mainly focus on the topic of **decision making for AD** (as opposed to perceptions, localisation or control for instance).
 - Many subjects I am discussing are new to me. I really hope I did not misinterpret any concept when referencing to papers. Please notify me if any statement or interpretation is incorrect!
 
+## Structure
+
+- [Uncertainty](#my-multi-word-header)
+  - [Sources of uncertainty](#sources-of-uncertainty)
+  - [Heteroscedastic Uncertainties](#heteroscedastic-uncertainties)
+  - [Unfreezing the Robot under Occlusion](#unfreezing-the-obot-under-occlusion)
+  - [Reducing Uncertainty](#reducing-uncertainty)
+- [Do not Forget Safety](#do-not-forget-safety)
+  - [Safety Proof for AD](#safety-proof-for-ad)
+  - [RSS](#rss)
+  - [Reachability analysis](#reachability-analysis)
+  - [Risk Assessment and Safety Checkers](#risk-assessment-and-safety-checkers)
+- [Generalization in decision modules](#generalization-in-decision-modules)
+  - [Generic scene representation](#generic-scene-representation)
+  - [Scene decomposition methods](#scene-decomposition-methods)
+- [Interaction](#interaction)
+
 ## Reinforcement Learning
 
 ## Partially Observable Markov Decision Process (POMDP)
@@ -133,7 +150,7 @@ Do you know how to **measure the difference between two probability distribution
 
 While most of these methods for perception and decision-making **output an uncertainty measure**, they treat the information from localisation and perception as **point estimates** (with zero variance). Nevertheless, the **propagation of uncertainty measurements through all the AD modules** is essential.
 
-(Bouton et al. 2019b) model the perception noise by a Gaussian distribution around the position and velocity measurements. They also **add false positive** and **false negative detections** of cars and pedestrian.
+(Bouton et al. 2019) model the perception noise by a Gaussian distribution around the position and velocity measurements. They also **add false positive** and **false negative detections** of cars and pedestrian.
 
 More generally, the **environment representation** based on **probabilistic occupancy grids** used in (Barbier et al. 2019) seems appropriate to capture the perception uncertainty.
 
@@ -164,9 +181,9 @@ During his keynote, Christoph Stiller called for more research in **_“Cooperat
 
 Another approached, not based on V2V communication, was presented during the SIPD workshop. I really enjoyed this work on behavioural planning presented by (Sun et al. 2019). It introduces the concept of **"Social Perception"**. The idea is to **infer some information** about the environment by **observing the behaviour of other traffic participants**. Two quotes from them:
 
->> “Human drivers on the road are intelligent agents whose behaviours can not only tell us what they want to do, but also what might have been missed by our own sensors.”
+> “Human drivers on the road are intelligent agents whose behaviours can not only tell us what they want to do, but also what might have been missed by our own sensors.”
 
->> “Human participants should be treated not only as dynamic obstacles, but also as distributed sensors that provide via their behaviours additional information about the environment beyond the scope of physical sensors”.
+> “Human participants should be treated not only as dynamic obstacles, but also as distributed sensors that provide via their behaviours additional information about the environment beyond the scope of physical sensors”.
 
 They show how it can be used to reduce uncertainty in the case of **occlusions** or **limited sensor range**.
 
@@ -174,7 +191,7 @@ They show how it can be used to reduce uncertainty in the case of **occlusions**
 |:--:|
 | *From the behaviour of the other driver, the ego car can infer and become more confident about the probability of a pedestrian crossing. Source: (Sun et al. 2019).* |
 
-## Do not foget Safety
+## Do not Forget Safety
 
 > “10 years ago, it was often said *Safety is not for research. It is for serious production*. Now, research cares about it.”
 
@@ -323,7 +340,7 @@ In the previous sections, I have been advocating for the POMDP formulation. I wa
 
 In many previous works about MDP, a deterministic **action masking mechanism** was used. For instance, in the lane changing problem, if the ego car is in the left most lane, then taking a *left* action will result in getting off the road. Therefore, a mask can be put on the *Q-value* associated with the left action to ensure it is never selected in such a state.
 
-At IV19, (Bouton et al. 2019b) presented a probabilistic model-checker for POMDP, using RL. The advantage is that the threshold can be adapted depending on the risk acceptance.
+At IV19, (Bouton et al. 2019) presented a probabilistic model-checker for POMDP, using RL. The advantage is that the threshold can be adapted depending on the risk acceptance.
 
 As I understood, for a **particular reward function**, the **optimality value (or *utility*) function** of an MDP is the **probability of reaching the goal safely**. This utility function can be learnt offline using value iteration. The values, in this case probabilities, are then used to learn the policy: the RL agent can **chose among the set of actions** that have a **probability of safety larger than a safety threshold**.
 
@@ -340,9 +357,50 @@ Mykel Kochenderfer ended his presentation by mentioning two remaining **challeng
 - It is still not clear **how to show** that the system that comes out of this **optimization** can be trusted.
 - **POMDPs with integrated model checkers** can be huge and works still need to be done to overcome the **computational tractability**.
 
-## Scenario, Dataset and Performance Metric decision making
-
 ## Generalization in decision modules
+
+Most authors show the relevance of their approaches on one or few scenarios. Usually with a fix number of traffic participants and a specific/arbitrary road layout. I was wondering how these approaches can **generalize to a different road structure**, in diverse scenarios with **a various number of participants**.
+
+I found two interesting methods:
+
+- Generic scene representation.
+- Scene decomposition methods.
+
+### Generic Scene Representation
+
+Generalization raises the **question of representation**. Vectors of **features** such as *distance to the other vehicle* and *relative velocity to the cyclist* can be used. But the **variation in the number of participants** will change the **size of the joint representation**. And the **non-constant size of the input** may be problematic for the algorithm, such as neural networks.
+
+Instead of describing the state of other participants with a vector and then **combining all the instance in one joint state vector**, **images representing the whole scene** can be used. This is done in (Joonatan and Folkesson 2019), where a generic visual representation is designed. The main advantage of representing the traffic scenario with an image is that number of traffic participants does not affect the size of the state and the computational complexity can be kept constant. Yet the resolution of the generated paths is dependent on the resolution used in image, `128`x`128` single-channel in this case. Moreover, the encoding of information such as the **semantic intention** may be tricky, especially if expressed with uncertainties.
+
+Several **hybrid representations**, i.e. the combination of an image and vector of some features, were used at IV19.
+
+In (Folkers, Rick, and Christof 2019), the state of the MDP is composed of an **ego feature vector** and a **obstacle grid**. In this cost map, also called _ternary perception map_, the target position is given as −1, free space is encoded by 0, while obstacles and lane boundaries are indicated by 1.
+
+| ![Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).](media/pics/folkers_perception_map.PNG "Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).")  |
+|:--:|
+| *Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).* |
+
+The idea of an **hybrid representation** is also used in (Pusse and Klusch 2019). The observation input for the IS-DESPOT solver contains, inter alia, a `84`x`84` image representing the intention of the other vehicles.
+
+### Scene Decomposition Methods
+
+**Online scene decomposition** is used in (Bouton et al. 2019). The idea is to **combine the utility functions of simple tasks** to approximate the solution of a **more complex task**.
+
+Here, the simple task aims at navigating the intersection assuming only one car, one pedestrian, and one obstacle. Including three agents enables to **capture interactions** between cars and pedestrians. This defines the so-called *canonical scenario*. In the presence of multiple cars and pedestrians, the global belief can be decomposed into **multiple instances of this canonical scenario**.
+
+Finally, the action is selected based on the most conservative instance, i.e. with **worst probability of success** and the **worst utility**.
+
+| ![Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).](media/pics/bouton_generalization.PNG "Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).")  |
+|:--:|
+| *Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).* |
+
+The utility decomposition method is also used in (Schratter et al. 2019a), where the simple task only considers one pedestrian.
+
+Nevertheless, such decomposition methods **do not capture all the interactions**, especially those between the other vehicles or pedestrians.
+
+This brings us to the topic of **interaction-aware reasoning**.
+
+## Scenario, Dataset and Performance Metric decision making
 
 ## Considering interaction between traffic participants
 
@@ -666,10 +724,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *akai_hmm_types.png* |
 
-| ![bouton_generalization.PNG](media/pics/bouton_generalization.PNG "bouton_generalization.PNG")  |
-|:--:|
-| *bouton_generalization.PNG* |
-
 | ![chatrenet_automation_vs_fatalities.PNG](media/pics/chatrenet_automation_vs_fatalities.PNG "chatrenet_automation_vs_fatalities.PNG")  |
 |:--:|
 | *chatrenet_automation_vs_fatalities.PNG* |
@@ -685,10 +739,6 @@ Zernetsch, Stefan et al. [2019].
 | ![folkers_hybrid_input.PNG](media/pics/folkers_hybrid_input.PNG "folkers_hybrid_input.PNG")  |
 |:--:|
 | *folkers_hybrid_input.PNG* |
-
-| ![folkers_perception_map.PNG](media/pics/folkers_perception_map.PNG "folkers_perception_map.PNG")  |
-|:--:|
-| *folkers_perception_map.PNG* |
 
 | ![gartner18.jpg](media/pics/gartner18.jpg "gartner18.jpg")  |
 |:--:|
