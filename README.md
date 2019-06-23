@@ -50,9 +50,97 @@ Disclaimers:
 
 ## Uncertainty
 
+> “It is far better to foresee even without certainty than not to foresee at all” - Henri Poincaré
+
+I have already mentioned that belief state planning like POMDP has the potential to significantly improve robustness of AD. They give the ability to reason about the future given the uncertain information about latent states and the future behaviours.
+
+In this section, I would like to examine:
+
+- The sources of uncertainty.
+- The use of probabilistic distributions in action selection and prediction.
+- The case of occlusion.
+- Some techniques to reduce uncertainty in AD.
+
+### Sources of uncertainty
+
+Christoph Stiller, one of the fathers of KITTI datasets, starting his keynotes by listing the sources of uncertainty**. He grouped them into four categories.
+
+- Uncertainty due to **noise** in perception.
+- Uncertainty due to **occlusion** and **limited sensor range**.
+- Uncertainty in **maps** and localisation.
+- Uncertainty in the **intent** of other traffic participants. More generally this encompass all the **social behavioural uncertainties**, such as local driving preferences.
+
+| ![Keynote by Christoph Stiller. Source: author provided.](media/pics/stiller_keynote.jpg "Keynote by Christoph Stiller. Source: author provided.")  |
+|:--:|
+| *Keynote by Christoph Stiller. Source: author provided.* |
+
+To deal with occlusions, Christoph Stiller mentioned the benefits of reasoning in terms of reachable sets, referencing the work of his team (Orzechowski, Meyer, and Lauer 2018).
+
+He then spent a long time discussing about uncertainties in **maps** and **localisation**. Maps contain information used for **tactical long-horizon decision making** such as the possible actions that one can take at that crossing or simply the speed limitation. But if maps **do not get updated** as the environment changes, it can be **very misleading**.
+
+This situation made me think of a quote about software engineering:
+
+> No documentation is better than a deprecated documentation.
+
+On a highway **construction site**, for instance, lanes could have been **laterally shifted by two meters**. The relative position between lane markers on the road may remain valid, but their positions will not match anymore with signs and poles. This could cause a **large trouble** in the **visual-based localization**.
+
+To address the question of **trust in map**, especially in building zones, Christoph Stiller mentioned a [dataset](https://www.mrt.kit.edu/software/mapvalidation/) for map verification. Recordings have been performed on roads before and during a construction work.
+
+One conclusion is that the AD vehicle should ideally be able to **get rid of map if it is causing difficulties**.
+
+### Heteroscedastic Uncertainties
+
+Another commonly-used classification of uncertainty distinguishes two categories.
+
+- Aleatoric Uncertainties. There are of statistical origin and apply especially for sensors. The noise inherent to measurement is often modelled by introducing probability densities, such as Gaussian distributions in the case of Kalman filters for instance.
+- Epistemic Uncertainties. They describe missing or incomplete information such as occluded areas. In this case hypothetical objects are considered.
+
+> I learnt a new term: “Heteroscedastic Aleatoric Uncertainties”!
+
+| ![The variance in the actions can vary. In the first half section (`t` `∈` [`0`; `100s`]), the estimate is highly confident (zero variance) since the vehicle is driving on a straight road. When approaching the intersection, the estimation shows more uncertainty. Source: (Schulz et al. 2019).](media/pics/schulz_heteroscedastic.PNG "The variance in the actions can vary. In the first half section (`t` `∈` [`0`; `100s`]), the estimate is highly confident (zero variance) since the vehicle is driving on a straight road. When approaching the intersection, the estimation shows more uncertainty. Source: (Schulz et al. 2019).")  |
+|:--:|
+| *The variance in the actions can vary. In the first half section (`t` `∈` [`0`; `100s`]), the estimate is highly confident (zero variance) since the vehicle is driving on a straight road. When approaching the intersection, the estimation shows more uncertainty. Source: (Schulz et al. 2019).* |
+
+(Schulz et al. 2019) learn a **probabilistic mapping** from context and route intention to **some action distribution** (acceleration and steering). Since the **variance is not constant** (contrary to *homoscedastic* regressions), this mapping is said **"heteroscedastic"**. It can express the **varying uncertainty in the choice of action** depending on the situation. The negative *log likelihood* is used as a loss function to learn both the mean and variance in one training procedure.
+
+(Pool, Kooij, and Gavrila 2019) and (Zernetsch et al. 2019) also include uncertainty in prediction by outputting a Gaussian distribution over the future position.
+
+| ![Incorporating uncertainties in trajectory prediction. Source: (Zernetsch et al. 2019).](media/pics/zernetsch_uncertainty_in_prediction.PNG "Incorporating uncertainties in trajectory prediction. Source: (Zernetsch et al. 2019).")  |
+|:--:|
+| *Incorporating uncertainties in trajectory prediction. Source: (Zernetsch et al. 2019).* |
+
+But modelling a future trajectory with a Gaussian could be problematic. Especially when considering multiple possible routes at an intersection. Instead of **predicting positions with ellipses**, (Hu, Zhan, and Tomizuka 2019) assign **intention probability** to some **reference paths**. This is known as *multi-modality prediction*.
+
+| ![Example of multi-modality in trajectory prediction. Source: (Hu, Zhan, and Tomizuka 2019).](media/pics/hu_multimodal.PNG "Example of multi-modality in trajectory prediction. Source: (Hu, Zhan, and Tomizuka 2019).")  |
+|:--:|
+| *Example of multi-modality in trajectory prediction. Source: (Hu, Zhan, and Tomizuka 2019).* |
+
+Uncertainty quantification can also be applied to **action selection and control**. The policy learnt in (Folkers, Rick, and Christof 2019) does not return a single action value but rather a pair (`µ`, `σ`), i.e. the **mean and standard deviation of a gaussian probability distribution** for each possible action.
+
+The **distributional perspective** is also applied by (Bernhard and Knoll 2019) where a value-based **Distributional RL** method is used. In common *value-based* MDP and POMDP solvers (e.g. *classical DQN*, *MCTS*, *Adaptive Belief Tree*), the cumulated discounted reward is **expressed as an expectation**. The term *Distributional* in their approach means that learnt value function is not a single numeric value. But rather a **distribution**.
+
+This concept reminds me the DeepMind post blog [*Going beyond average for reinforcement learning*](https://deepmind.com/blog/going-beyond-average-reinforcement-learning/) introducing [C51](https://arxiv.org/abs/1707.06887).
+
+In (Bernhard and Knoll 2019), the value-distribution function is learnt offline and can be then used to select risk-sensitive actions. The selection differs from the classical RL approaches where the action with the **highest expectation** is chosen.
+
+My interpretation is as follows. For safety reasons, we are interested in the **lower tail of the return distribution**. The action selection could be based on the **inverse CDF** at a certain percentage (e.g. `10%`). But as shown on the figure below, this percentage, representing a **risk measure**, differs between actions. It is around `50%` for the red distribution, and maybe less than `20%` for the other two. I must admit I did not understand all the details on how these risk metrics are computed. Anyway, the **action with the highest bound is selected** (*high. accel.* in the following figure).
+
+| ![Working with distributions instead of mean expectation enable to improve uncertainty-aware action selection. Source: (Bernhard and Knoll 2019).](media/pics/bernhard_distribution.PNG "Working with distributions instead of mean expectation enable to improve uncertainty-aware action selection. Source: (Bernhard and Knoll 2019).")  |
+|:--:|
+| *Working with distributions instead of mean expectation enable to improve uncertainty-aware action selection. Source: (Bernhard and Knoll 2019).* |
+
+Do you know how to **measure the difference between two probability distributions**? I knew the [KL-divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence). Reading the paper, I discovered an alternative: the [Wasserstein metric](https://en.wikipedia.org/wiki/Wasserstein_metric), (a proper “distance” this time) used in the training phase.
+
+While most of these methods for perception and decision-making **output an uncertainty measure**, they treat the information from localisation and perception as **point estimates** (with zero variance). Nevertheless, the **propagation of uncertainty measurements through all the AD modules** is essential.
+
+(Bouton et al. 2019b) model the perception noise by a Gaussian distribution around the position and velocity measurements. They also **add false positive** and **false negative detections** of cars and pedestrian.
+
+More generally, the **environment representation** based on **probabilistic occupancy grids** used in (Barbier et al. 2019) seems appropriate to capture the perception uncertainty.
+
 ## Do not foget Safety
 
 > “10 years ago, it was often said *Safety is not for research. It is for serious production*. Now, research cares about it.”
+
 > "Academics love to be distracted by a future in which self-driving vehicles make life-or-death decisions while moving at high speed. Whether the robot trolley will crash into the businessman or the older woman is the question of the day." [Source](https://www.nature.com/articles/d41586-019-01473-3)
 
 This topic was new to me. I have heard of:
@@ -545,10 +633,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *akai_hmm_types.png* |
 
-| ![bernhard_distribution.PNG](media/pics/bernhard_distribution.PNG "bernhard_distribution.PNG")  |
-|:--:|
-| *bernhard_distribution.PNG* |
-
 | ![bouton_generalization.PNG](media/pics/bouton_generalization.PNG "bouton_generalization.PNG")  |
 |:--:|
 | *bouton_generalization.PNG* |
@@ -576,10 +660,6 @@ Zernetsch, Stefan et al. [2019].
 | ![gartner18.jpg](media/pics/gartner18.jpg "gartner18.jpg")  |
 |:--:|
 | *gartner18.jpg* |
-
-| ![hu_multimodal.PNG](media/pics/hu_multimodal.PNG "hu_multimodal.PNG")  |
-|:--:|
-| *hu_multimodal.PNG* |
 
 | ![hubmann_contruction_belief_tree.PNG](media/pics/hubmann_contruction_belief_tree.PNG "hubmann_contruction_belief_tree.PNG")  |
 |:--:|
@@ -621,14 +701,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *schratter_risk_assessement.PNG* |
 
-| ![schulz_heteroscedastic.PNG](media/pics/schulz_heteroscedastic.PNG "schulz_heteroscedastic.PNG")  |
-|:--:|
-| *schulz_heteroscedastic.PNG* |
-
-| ![stiller_keynote.jpg](media/pics/stiller_keynote.jpg "stiller_keynote.jpg")  |
-|:--:|
-| *stiller_keynote.jpg* |
-
 | ![sun_social_perception.PNG](media/pics/sun_social_perception.PNG "sun_social_perception.PNG")  |
 |:--:|
 | *sun_social_perception.PNG* |
@@ -644,7 +716,3 @@ Zernetsch, Stefan et al. [2019].
 | ![weast_keynote.jpg](media/pics/weast_keynote.jpg "weast_keynote.jpg")  |
 |:--:|
 | *weast_keynote.jpg* |
-
-| ![zernetsch_uncertainty_in_prediction.PNG](media/pics/zernetsch_uncertainty_in_prediction.PNG "zernetsch_uncertainty_in_prediction.PNG")  |
-|:--:|
-| *zernetsch_uncertainty_in_prediction.PNG* |
