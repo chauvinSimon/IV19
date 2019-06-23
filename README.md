@@ -178,6 +178,43 @@ I would like to end this section on safety by mentioning other techniques to emb
 
 ### Risk Assessment and Safety Checkers
 
+Besides RSS, other techniques for safety checker were presented.
+
+(Barbier et al. 2019) proposed a method to validate perception and decision-making systems via *Statistical Model Checking*. The idea is to compute the **probability for a system to stay in a certain range of KPIs**, for instance for the acceleration to stay bounded.
+
+Another interesting aspect is the use of **Bounded Linear Temporal Logic** (BLTL). Here, the term *bounded* means that the operators can be **parameterized by a time bound**. This method offers a finer formulation for validation. For instance, one can work with the **probability of crossing the intersection in less than a given time**.
+
+Another point I liked was their method for **risk assessment** at road intersections. The idea, built from their previous work (Barbier et al. 2018), is to compute the **difference between what the driver IS DOING** (called *intention*) and **what a driver SHOULD DO** according to priority rules (called *expectation*). Situations where *intention* and *expectation* do not match could result in a risky interaction. The resulting discrepancy can be useful for risk assessment since it can **capture some misinterpretation** of the scene by the ego vehicle, especially in scenarios with occlusion.
+
+LTL was also applied in (Esterle, Aravantinos, and Knoll 2019), not for safety or risk assessment but for traffic rule compliance. They show how LTL can be used to verify high-level manoeuvre plans. As argued, **"this may help shift part of the development from writing code to writing specifications"**. The idea is to construct *semantic traces* that represent possible manoeuvre variants. And then to check whether each trace satisfies the specified traffic rules. **Vienna Convention of Traffic Rules** are used described in the LTL formulas.
+
+| ![Semantic traces are first generated depending on the scenario. Their validity with respect to LTL rules are then checked. Source: (Esterle, Aravantinos, and Knoll 2019).](media/pics/esterle_overview.PNG "Semantic traces are first generated depending on the scenario. Their validity with respect to LTL rules are then checked. Source: (Esterle, Aravantinos, and Knoll 2019).")  |
+|:--:|
+| *Semantic traces are first generated depending on the scenario. Their validity with respect to LTL rules are then checked. Source: (Esterle, Aravantinos, and Knoll 2019).* |
+
+In their conclusion, the authors point that it should be allowed to **violate some rules in emergency situations**. They suggest investigating the difference between *soft* and *hard* rules to distinguish between *should* and *must*.
+
+In the previous sections, I have been advocating for the POMDP formulation. I was interested to know how safety checkers can be incorporated to MDP and POMDP.
+
+In many previous works about MDP, a deterministic **action masking mechanism** was used. For instance, in the lane changing problem, if the ego car is in the left most lane, then taking a *left* action will result in getting off the road. Therefore, a mask can be put on the *Q-value* associated with the left action to ensure it is never selected in such a state.
+
+At IV19, (Bouton et al. 2019b) presented a probabilistic model-checker for POMDP, using RL. The advantage is that the threshold can be adapted depending on the risk acceptance.
+
+As I understood, for a **particular reward function**, the **optimality value (or *utility*) function** of an MDP is the **probability of reaching the goal safely**. This utility function can be learnt offline using value iteration. The values, in this case probabilities, are then used to learn the policy: the RL agent can **chose among the set of actions** that have a **probability of safety larger than a safety threshold**.
+
+Finally, during the SIPD workshop, Mykel Kochenderfer mentioned a [project](https://github.com/sisl/POMDPModelChecking.jl) from his team on verification in POMDP from LTL formulas. It relies on [`POMDPs.jl`](https://github.com/JuliaPOMDP/POMDPs.jl) for expressing the POMDP model and [`Spot.jl`](https://github.com/sisl/Spot.jl) for manipulating LTL formulas.
+
+| ![POMDP Model Checker. Source: author provided.](media/pics/kochenderfer_pomdp_checker.jpg "POMDP Model Checker. Source: author provided.")  |
+|:--:|
+| *POMDP Model Checker. Source: author provided.* |
+
+As I understood, the [SPOT library](https://spot.lrde.epita.fr/index.html) is used to translate an LTL formula into some automata. This automata is then combined with the POMDP model and generates a larger POMDP that can be solved with modern solvers. The output is the probability that the LTL formula is verified.
+
+Mykel Kochenderfer ended his presentation by mentioning two remaining **challenges about safety checker for decision making**:
+
+- It is still not clear **how to show** that the system that comes out of this **optimization** can be trusted.
+- **POMDPs with integrated model checkers** can be huge and works still need to be done to overcome the **computational tractability**.
+
 ## Scenario, Dataset and Performance Metric decision making
 
 ## Generalization in decision modules
@@ -524,10 +561,6 @@ Zernetsch, Stefan et al. [2019].
 |:--:|
 | *diehl_interaction_graph.PNG* |
 
-| ![esterle_overview.PNG](media/pics/esterle_overview.PNG "esterle_overview.PNG")  |
-|:--:|
-| *esterle_overview.PNG* |
-
 | ![folkers_attention.PNG](media/pics/folkers_attention.PNG "folkers_attention.PNG")  |
 |:--:|
 | *folkers_attention.PNG* |
@@ -555,10 +588,6 @@ Zernetsch, Stefan et al. [2019].
 | ![joonatan_CVAE.png](media/pics/joonatan_CVAE.png "joonatan_CVAE.png")  |
 |:--:|
 | *joonatan_CVAE.png* |
-
-| ![kochenderfer_pomdp_checker.jpg](media/pics/kochenderfer_pomdp_checker.jpg "kochenderfer_pomdp_checker.jpg")  |
-|:--:|
-| *kochenderfer_pomdp_checker.jpg* |
 
 | ![pusse_architecture.PNG](media/pics/pusse_architecture.PNG "pusse_architecture.PNG")  |
 |:--:|
