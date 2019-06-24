@@ -750,9 +750,9 @@ Humans follow two kind of rules:
 
 These human implicit rules are modelled by RSS via **five principles**.
 
-| ![The five RSS principles meant to formalize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided.](media/pics/rss_principles.jpg "The five RSS principles meant to formalize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided.")  |
+| ![The five RSS principles meant to formalize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided - picture from the RSS poster.](media/pics/rss_principles.jpg "The five RSS principles meant to formalize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided - picture from the RSS poster.")  |
 |:--:|
-| *The five RSS principles meant to formalize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided.* |
+| *The five RSS principles meant to formalize human common sense. As opposed to explicit rules, they are subjective and open to interpretation. Source: author provided - picture from the RSS poster.* |
 
 In addition to *concept of blame* and the *five human implicit rules*, I noted that **the RSS checker is based on parametrized models**. This can be shown by the presence of equations on the above picture (sorry - it is hard to see). Such a parametrization offers opportunities and challenges.
 
@@ -768,9 +768,9 @@ Finally, I have retained two main announcements from RSS:
 - First, RSS will use the **KITTI dataset to infer RSS parameters** that best fit to the recorded human drivers. It made me think of Inverse RL approaches which aim at finding the reward function of an MDP, given some optimal demonstration. This will be particularly useful to offer a **more realistic** (yet German specific) model. But the question of `β max` will still remain.
 - IV19 was the opportunity for Jack Weast to mention the release of a [library](https://intel.github.io/ad-rss-lib/) that provides a C++ implementation of RSS. It comes with support for integration with Baidu Apollo and CARLA.
 
-| ![First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several locations: within the behaviour planner, around the planning module or outside the AD (CARLA example).](media/pics/rss_lib.jpg "First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several locations: within the behaviour planner, around the planning module or outside the AD (CARLA example).")  |
+| ![First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several locations: within the behaviour planner, around the planning module or outside the AD. Source: author provided - picture from the RSS poster.](media/pics/rss_lib.jpg "First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several locations: within the behaviour planner, around the planning module or outside the AD. Source: author provided - picture from the RSS poster.")  |
 |:--:|
-| *First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several locations: within the behaviour planner, around the planning module or outside the AD (CARLA example).* |
+| *First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several locations: within the behaviour planner, around the planning module or outside the AD. Source: author provided - picture from the RSS poster.* |
 
 ### Reachability Analysis
 
@@ -835,9 +835,9 @@ As I understood, for a **particular reward function**, the **optimal value funct
 
 Finally, during the SIPD workshop, Mykel Kochenderfer mentioned a [project](https://github.com/sisl/POMDPModelChecking.jl) from his team on verification in POMDP from LTL formulas. It relies on [`POMDPs.jl`](https://github.com/JuliaPOMDP/POMDPs.jl) for expressing the POMDP model and [`Spot.jl`](https://github.com/sisl/Spot.jl) for manipulating LTL formulas.
 
-| ![POMDP Model Checker. Source: author provided.](media/pics/kochenderfer_pomdp_checker.jpg "POMDP Model Checker. Source: author provided taken during the SIPD workshop.")  |
+| ![POMDP Model Checker. Source: author provided - taken during the SIPD workshop.](media/pics/kochenderfer_pomdp_checker.jpg "POMDP Model Checker. Source: author provided - taken during the SIPD workshop.")  |
 |:--:|
-| *POMDP Model Checker. Source: author provided.* |
+| *POMDP Model Checker. Source: author provided - taken during the SIPD workshop.* |
 
 As I understood, the [SPOT library](https://spot.lrde.epita.fr/index.html) is used to translate an LTL formula into some automata. These automata are then combined with the POMDP model. This generates a larger POMDP that can be solved with modern solvers. The final output is the probability for the LTL formula to be verified.
 
