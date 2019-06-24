@@ -10,14 +10,15 @@
 ```bash
 TL;DR:
 - Look how other industries (e.g. aviation) deal with risk assessment and decision making under uncertainty.
-- Abandon the *Vision Zero* buzzword.
 - Stop separating prediction and planning and use POMDP formulations.
 - Combine learning and planning (e.g. MCTS + RL).
 - Interaction-aware planning.
-- Think distribution, not expectation or point-estimate.
-- Generalize with decomposition or image-like states.
-- Some demos were impressive. But far from series production.
-- ... # todo
+- Bring interpretability into learning-based methods.
+# - Generalize with decomposition or image-like states.
+# - Think distribution, instead of mean expectation or point-estimate.
+- Abandon the *Vision Zero* buzzword.
+- AD could be a disaster if perpetuating inequalities and ignoring shared mobility.
+- Some demos were impressive. But far from series production. # -> Back to work.
 ```
 
 Last week, experts from the autonomous driving (AD) world came together for the 2019 IEEE Intelligent Vehicle Symposium ([IV19](https://iv2019.org/)) in Paris to discuss about research and applications for autonomous driving.
@@ -45,7 +46,9 @@ Disclaimers:
 ## Structure
 
 - [We are living in a POMDP](#we-are-living-in-a-pomdp)
-  - [We are living in a POMDP](#we-are-living-in-a-pomdp)
+  - [POMDP Benefits](#pomdp-benefits)
+  - [POMDP Formulation](#pomdp-formulation)
+  - [POMDP Solvers](#pomdp-solvers)
 - [Reinforcement Learning](#reinforcement-learning)
   - [Difference Learning / Planning](#difference-learning-/-planning)
   - [Pure RL for decision making in AD is hard](#pure-rl-for-decision-making-in-ad-is-hard)
@@ -56,7 +59,7 @@ Disclaimers:
   - [Learning-based Methods Now used in Prediction](#learning-based-methods-now-used-in-prediction)
   - [Interpretability is not an Option](interpretability-is-not-an-option)
   - [In Validation Process](in-validation-process)
-- [Uncertainty](#my-multi-word-header)
+- [Uncertainty](#Uncertainty)
   - [Sources of uncertainty](#sources-of-uncertainty)
   - [Heteroscedastic Uncertainties](#heteroscedastic-uncertainties)
   - [Unfreezing the Robot under Occlusion](#unfreezing-the-obot-under-occlusion)
@@ -78,7 +81,9 @@ Disclaimers:
   - [RSS](#rss)
   - [Reachability analysis](#reachability-analysis)
   - [Risk Assessment and Safety Checkers](#risk-assessment-and-safety-checkers)
-- Social benefits + acceptance
+- [AD and Society](#ad-and-society)
+  - [Social Benefit](#social-benefit)
+  - [Social Acceptance](#social-acceptance)
 - [Demonstrations](#demonstrations)
   - [Test Day](#test-day)
   - [Miscellaneous Comments](#miscellaneous-comments)
@@ -93,6 +98,7 @@ Disclaimers:
 
 In this first section, I review the different **POMDP implementations** used for IV19, mentioning the **benefits for AD applications of such a formulation** , and compare the different **solving techniques**. The section is structured as follows:
 
+- Benefits of using POMDP for decision making in AD.
 - Comparison of POMDP formulations.
 - Comparison of POMDP solving techniques.
 
@@ -159,9 +165,9 @@ One could used **inverse reinforcement learning** (IRL) to determine appropriate
 
 (Folkers, Rick, and Christof 2019) organizes the training into two phases and **varies the weighting of each reward contributions** between both. When the policy learns to get high rewards in the first phase, additional behaviours such as an appropriate speed and small steering angles are considered.
 
-| ![For each time step, the policy tree is expanded down and the first action (`a1` or `a2`) of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)](media/pics/hubmann_contruction_belief_tree.PNG "For each time step, the policy tree is expanded down and the first action (`a1` or `a2`) of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)")  |
+| ![Interesting to see how the belief tracker of the POMDP maintains hypotheses about occluded pedestrian. Source: (Schratter et al. 2019).](media/pics/schratter_belief.PNG "Interesting to see how the belief tracker of the POMDP maintains hypotheses about occluded pedestrian. Source: (Schratter et al. 2019).")  |
 |:--:|
-| *For each time step, the policy tree is expanded down and the first action, `a1` or `a2`, of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)* |
+| *Interesting to see how the belief tracker of the POMDP maintains hypotheses about occluded pedestrian. Source: (Schratter et al. 2019).* |
 
 Let's now consider the last two elements of the POMDP formulation: the **measurement** model and the **transition** model. Here, both models are supposed to be known, leading to a planning problem (see the section on [Difference Learning / Planning](#difference-learning-/-planning)). They express the **probability** of ending in an arbitrary state (resp. emitting an observation) given the selected action and the current state.
 
@@ -175,7 +181,7 @@ Another possibility is to infer the action of other participant, by assuming the
 
 Besides point-mass models and probabilitic approaches, (Schratter et al. 2019a) uses a simple **reachability** model. Depending on the current pedestrian state, future positions for the pedestrian are computed based on a **set of possible acceleration values**.
 
-### POMDP solvers
+### POMDP Solvers
 
 Solving the POMDP means **finding the optimal policy**, i.e. the function that tells which action to take given any state to **maximize some notion of cumulative reward**. As a probabilistic non-linear optimization problem under state uncertainty, it is hard to solve, and many methods rely on the **approximation of the optimal policy**.
 
@@ -193,6 +199,10 @@ The notion of **_tree_** is important for **online** solving. From one **initial
 - Contrary to optimisation methods like **A***, MCTS is said **“anytime”**, i.e. it **can return a valid solution even if it is interrupted before it ends**. It is expected to find better and better solutions the longer it keeps running.
 - For the construction of the belief tree to be efficient, it is important to **guide the search with a heuristic**. At each of the action nodes, a **utility function** `U(b, a)` (or _value function_), tries to **estimate the cumulative reward** that the agent will get if it takes the action `a` being in belief `b` and then follows the policy. This heuristic, together with the **number of times the action node has been visited** serve to decide which node to choose when expanding the tree (UCB-based exploration and exploitation). One very promising approach is to use learning methods (like RL) to **learn this utility function** (detailed in the section [Combining Learning and Planning](#combining-learning-and-planning))  
 - **Recycling the constructed tree** at the next search can be beneficial from the computational point of view and make MCTS methods very efficient.
+
+| ![For each time step, the policy tree is expanded down and the first action (`a1` or `a2`) of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)](media/pics/hubmann_contruction_belief_tree.PNG "For each time step, the policy tree is expanded down and the first action (`a1` or `a2`) of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)")  |
+|:--:|
+| *For each time step, the policy tree is expanded down and the first action, `a1` or `a2`, of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)* |
 
 (Schörner et al. 2019) and (Hubmann et al. 2019) are using [**TAPIR**](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir), which is a software toolkit implementation of the online solver Adaptive Belief Tree (ABT).
 (Pusse and Klusch 2019) is extended the online solver [**DESPOT**](https://github.com/AdaCompNUS/despot) with **Importance Sampling** to enable outcomes that have a low probability of occurring, e.g. crashes to be sample. It reminds me the [Prioritized Experience Replay](https://arxiv.org/abs/1511.05952) used to replay important transitions more frequently in DQN.
@@ -306,6 +316,10 @@ I have listed other example of successful combinations in the RL sections. The b
 
 (Schratter et al. 2019a) combine a POMDP planner with an Autonomous Emergency Braking (AEB) system. In scenarios with occlusion, the **POMDP planner enables the system to anticipate this uncertainty** and to prevent an emergency stop. In **parallel**, the AEB system runs at a **higher frequency and intervenes** with a strong brake intervention **when a collision is unavoidable**. The resulting combination can pass obstacles faster than a sole POMDP, while avoiding all collisions.
 
+| ![For each pedestrian, a probability of collision is computed from the time-to-brake TTB and the predicted position of the pedestrian. The difference between time to collision and time needed to stop is used to decide an emergency braking. Source: (Schratter et al. 2019).](media/pics/schratter_risk_assessement.PNG "For each pedestrian, a probability of collision is computed from the time-to-brake TTB and the predicted position of the pedestrian. The difference between time to collision and time needed to stop is used to decide an emergency braking. Source: (Schratter et al. 2019).")  |
+|:--:|
+| *For each pedestrian, a probability of collision is computed from the time-to-brake TTB and the predicted position of the pedestrian. The difference between time to collision and time needed to stop is used to decide an emergency braking. Source: (Schratter et al. 2019).* |
+
 ### Learning-based methods now used in prediction
 
 Other learning-based approaches to **replicate the behaviour of a non-learning-based methods** such as probabilistic or  kinematics-based approaches. And they show promising results, especially in **high complex interactions**.
@@ -346,8 +360,6 @@ After training a RL agent with PPO, (Folkers, Rick, and Christof 2019) compute a
 While we do not want to have a **GAIL-based agent generating the policy** of the autonomous vehicle, it can serve for **simulation and validation purposes**. Especially for the policy of other traffic participants in simulation. It does **not need to be 100% safe** or interpretable. And it can even find bugs in the hand designed engineering system. The learning can be done **relatively fast** using naturalistic datasets to **model the most likely behaviour**. And it does not require much parameter tuning. Moreover, obtaining a mean behaviour does not need much data.
 
 But in validation, it is important to also build model to estimate **low-probability events** that can lead to failures. And this is where **expert knowledge** (non-learnt) is extremely useful.
-
-## Social Benefits of AD
 
 ## Uncertainty
 
@@ -559,7 +571,6 @@ Finally, I have retained two main announcements from RSS:
 
 - First, RSS will use the **KITTI dataset to infer RSS parameters** that best fit to the recorded human drivers. It made me think of Inverse RL approaches which aim at finding the reward function of an MDP, given some optimal demonstration. This will be particularly useful to offer a **more realistic** (yet German specific) model. But the question of `β max` will still remain.
 - IV19 was the opportunity for Jack Weast to mention the release of a [library](https://intel.github.io/ad-rss-lib/) that provides a C++ implementation of RSS. It comes with support for integration with Baidu Apollo and CARLA.
-
 
 | ![First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several location: within the behaviour planner, around the planning module or outside the AD (CARLA example).](media/pics/rss_lib.jpg "First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several location: within the behaviour planner, around the planning module or outside the AD (CARLA example).")  |
 |:--:|
@@ -833,6 +844,103 @@ Wei Zhan, co-organizer of the SIPD workshop, took the opportunity to **announce 
 - Finally, all scenarios come with an [Lanelet2](https://github.com/fzi-forschungszentrum-informatik/Lanelet2)-based HD-map with semantic information. It will also have **occlusion as ground truth** in the model, which is key to test social perception.
 
 Participants were **excited about this new dataset**. As Mykel Kochenderfer noted, it would be nice to also include **very unstructured traffic**. He suggested looking at a place like **India** with more than `17%` of the total world population and see if algorithms from western right-driving countries work there.
+
+## AD and Society
+
+_This section solely reflects the opinion and conclusion of its authors, and not ERS Labs AG._
+
+> “Science sans conscience n'est que ruine de l'âme” – Rabelais
+
+Everyone was having fun in the demo of IRSTEA - Institut Pascal. Originally a project on robotization and automation in agriculture, their prototype was presented as a **support for infantrymen**. The robot can follow a foot soldier while **caring heavy material**, memorize its path, and reproduce the trajectory to the base camp for replenishment. **The border from AD to military application is already crossed**. I am not sure every researchers and engineers realized that.
+
+| ![Robot convoys from IRSTEA: the robot learns a trajectory from demonstration in a previously mapped environment. It will be able to reproduce this trajectory based on radar localization. Source: author provided.](media/gif/pascal_fantassin.gif "Robot convoys from IRSTEA: the robot learns a trajectory from demonstration in a previously mapped environment. It will be able to reproduce this trajectory based on radar localization. Source: author provided.")  |
+|:--:|
+| *Robot convoys from IRSTEA: the robot learns a trajectory from demonstration in a previously mapped environment. It will be able to reproduce this trajectory based on radar localization. Source: author provided.* |
+
+In this section, I would like to address two topics:
+
+- Social Acceptance of AD applications
+- Social Benefit brought by AD applications
+
+### Social Acceptance
+
+> Technology-led discussions are often over optimistic.
+
+Before attending the SIPD workshop, I could assist to the panel discussion of the workshop on [Ensuring and Validating Safety for Automated Vehicles](https://www.ifr.ing.tu-bs.de/en/dept-vehicle-electronics/events/iv-workshop-2019) (EVSAV).
+
+The main point was: **The approach _Vision Zero_ promoted by most OEMs and Bay-area newcomers is misleading.**
+
+> Many companies are establishing a strict _Vision Zero_ for road safety. As a result, no one will accept any fatalities. But asking for risk zero is just not realistic.
+
+Markus Maurer, from TU Braunschweig, deplored the absence of a **rational discussion about risk**, arguing that most OEMs do not want to have a public debate about AD fatality risk. “We all know that we must minimize risk. But **it won’t reach zero**”. Engineers cannot decide on themselves and decisions should rather be discussed with the authorities and be **backed-up by the society**.
+
+To show that **_risk zero_ is just not realistic**, Katherine Driggs-Campbell drew a parallel with the **introduction of automation in aviation** during the SIPD workshop. Introducing autonomy is supposed to be safer. But it has been shown by [Dominique Chatrenet](http://ec.europa.eu/invest-in-research/pdf/workshop/chatrenet%20_b3.pdf), for new piece of automation that is introduced, we see an **improvement in the long term** but a **spike in fatalities in the transient period**. Maybe _Vision Zero_ should be renamed _Vision Asymptotically Zero_ 😉
+
+| ![For each new piece of automation that is introduced, we see an improvement in the long term but a spike in fatalities in the transient period. [Source](http://ec.europa.eu/invest-in-research/pdf/workshop/chatrenet%20_b3.pdf)](media/pics/chatrenet_automation_vs_fatalities.PNG "For each new piece of automation that is introduced, we see an improvement in the long term but a spike in fatalities in the transient period. [Source](http://ec.europa.eu/invest-in-research/pdf/workshop/chatrenet%20_b3.pdf)")  |
+|:--:|
+| *For each new piece of automation that is introduced, we see an improvement in the long term but a spike in fatalities in the transient period. [Source](http://ec.europa.eu/invest-in-research/pdf/workshop/chatrenet%20_b3.pdf)* |
+
+Markus Maurer also warned that one single accident could have **significant detrimental impacts** for the involved manufacturer and for the whole industry.
+
+Did manufacturers and the public learn all the lessons from the [Audi Sudden Acceleration case](https://www.autosafety.org/audi-sudden-acceleration/)? Back to 1985, this was a disaster for the goodwill of the brand and it took [15 years](https://en.wikipedia.org/wiki/Sudden_unintended_acceleration) for Audi to reach the same level of U.S. sales again.
+
+And **media exposure** has increased since then.
+
+For all these reasons, Markus Maurer **called the engineer to stand up**, **abandon _Vision Zero_**, **explain the risk**, and engage a **public discussion** before launching any AD products.
+
+It leads to the **question of social benefits**.
+
+But before going to that, one could argue that such a debate did not take place in the **aviation domain**. It raises an alternative question: _To what extend should engineer should communicate to the public?_ _Should we know everything?_ _Should some details be kept hidden?_ Airplane manufacturers do not explicitly communicate on risk. Or at least it is not covered in the media. But **we trust it**. The difference with the vehicles on the street is probably that not everyone is a pilot and that not everyone can compare the AD decisions with what he/she would have done instead.
+
+> Acceptance is not based on risk. But rather on expectation of benefits, especially in entertainment.
+
+Another participant brought another interesting point: He was arguing that **social acceptance is not (only) corelated to risk**, but rather **to the expectation of benefits**. He then drew a parallel with the development of smartphones. They always have been presented as _cool_. From the beginning, their risks did **not not carry much weight** in the face of the ability to watch video from everywhere, to access the web remotely and to increase one’s “socially” connection. And there has been no public discussion at all.
+
+Today, AD is mostly in the **hand of industrials** and under the **eyes of regulators**. At the same time, **over-optimistic announcements are generating high expectations**. AD is presented as “cool”. Probably no room for any public discussion.
+
+### Social Benefit
+
+I found the keynote **_Public policy challenges of new mobility services_** by transport policy expert **Tom Vöge** was very appropriate. Not only to make a **break with scientific concepts** and algorithms. Also to **step back** and question our (excited) involvement in developing this technology. An **invitation to come down from the ivory (research) tower** and **question the social benefit of AD.
+
+Well, before arguing about any benefit and threat, let me **restrict the following reflexion to level-5 commuting of civilian** (as opposed to long-distance mobility or military applications).
+
+| ![Keynote by Tom Vöge. Source: author provided.](media/pics/vöge_keynote.JPG "Keynote by Tom Vöge. Source: author provided.")  |
+|:--:|
+| *Keynote by Tom Vöge. Source: author provided.* |
+
+For this application, AD **holds a lot of promises** and is **supported by various groups**.
+
+> "Some of the world’s largest car manufacturers and technology companies are competing to tap into what could be a $7-trillion revenue stream. Of course, industry talking points emphasize something besides money: safety". Ashley Nunes
+
+As [stated](https://www.nature.com/articles/d41586-019-01473-3) by Ashley Nunes, "**Economists** describe how the technology will **upend trade**. **Urban planners** describe how our cities will soon look very different after they have been reshaped, owing to the **diminished need for car parks**. **Medical professionals** proclaim the **end of road-traffic accidents** as we know them." Some mention the mobility offered to people that are not in a state to drive. And the possibility to "let the car" take over in situations where driving is all but fun. One may also add “capturing brain time to offer entertainment, expose advertisement or impose remote work”.
+
+Then come the threats. The main point of this keynote was about **share mobility** and **threat of congestion**.
+
+> “if it leads to more sharing and more people to car, it is a good. Otherwise, there is no benefit at all. In Europe, commuting to/from work has an occupancy rate of 1.2. If could be 2, 3, 4, 10. Or it could become 0. That would be a disaster.”
+
+| ![It was not at all clear that the number of vehicles on the roads would decrease as a result of automation. Source: author provided.](media/pics/vöge_sharing.jpg "It was not at all clear that the number of vehicles on the roads would decrease as a result of automation. Source: author provided.")  |
+|:--:|
+| *It was not at all clear that the number of vehicles on the roads would decrease as a result of automation. Source: author provided.* |
+
+Tom Vöge warned against the risk of letting the self-driving market **develop on its own**, with little governmental intervention. Bay-areas companies want fast implementation and want to bring large changes. **They want to reinvent mobility with AD** and make authorities, transport operators and regulators lose their oversight. AD services will impose a **direct competition with legacy transport services**, which are often heavily regulated and protected.
+
+AD will not substitute one to one an existing mobility mode and will rather be part of the multi-modal transports. Nevertheless, there is a (_non-zero_ here as well 😉) risk of **modal shift**, i.e. **people moving from green modes** such as cycling and walking to AD. And if it is not from green mode, it could be from **public transport**, especially from bus and trains. Finally, if people can **work during the transport**, longer trips will not be an issue, leading to additional **traffic and urban sprawl**.
+
+The second concern of the keynote was about **perpetuating inequality**, with companies potentially deploying their vehicles in areas that make more economic sense for self-driving cars to operate. This would **marginalized unprivileged** and **low-density areas**. Considering the costly sensors and hardware, the enormous development costs and the non-cheap insurance contracts, AD products or services, even on shared vehicle and at wide scale, will be expensive. Tom Vöge called the governments to **ensure equal distribution in this technology**.
+
+The benefit of safer vehicles technologies (not AD) introduced in the US between 1995 and 2010 already **failed to spread evenly across the socio-economic spectrum**, as shown in [this study](https://academic.oup.com/aje/article/182/7/606/107280). In 1995 the mortality rates related to motor-vehicle **accidents involving people at the bottom of the education spectrum** were **2.4 times higher** than those involving people at the top. By 2010, they were about **4.3 times higher**.
+
+In the recent excellent [article](https://www.nature.com/articles/d41586-019-01473-3) “Driverless cars: researchers have made a wrong turn”, Ashley Nunes builds on that and asks:
+
+>> If there is a group in the United States that stands to benefit most from the life-saving potential of self-driving technology, it’s those who live in the greatest poverty, but only if they can afford the technology. Driverless-car technology might have the potential to improve public health and save lives, but if those who most need it don’t have access, whose lives would we actually be saving?
+
+| ![We tend to overestimate the effect of a technology in the short run and underestimate the effect in the long run. [Source](https://www.gartner.com/smarterwithgartner/5-trends-emerge-in-gartner-hype-cycle-for-emerging-technologies-2018/).](media/pics/gartner18.jpg "We tend to overestimate the effect of a technology in the short run and underestimate the effect in the long run. [Source](https://www.gartner.com/smarterwithgartner/5-trends-emerge-in-gartner-hype-cycle-for-emerging-technologies-2018/).")  |
+|:--:|
+| *We tend to overestimate the effect of a technology in the short run and underestimate the effect in the long run. [Source](https://www.gartner.com/smarterwithgartner/5-trends-emerge-in-gartner-hype-cycle-for-emerging-technologies-2018/).* |
+
+Tom Vöge ended by mentioning the **potential scenarios of AD development**. From the 2018 Gartner hype cycle, Level-5 ADs are about to **reach their peak of inflated expectations**, while level-4 technology is already going down to the “through of disillusionment”. What is coming next is very uncertain. He warned against **being blinded by the current hype**. The technology is still in its infancy, nobody knows where it will lead. He ended with:
+
+> The distant future can still not be foreseen - but it can be shaped.
 
 ## Demonstrations
 
@@ -1137,51 +1245,3 @@ Ure, N Kemal, M Ugur Yavas, Ali Alizadeh, and Can Kurtulus. [2019].
 Zernetsch, Stefan et al. [2019].
 **“Trajectory Forecasts with Uncertainties of Vulnerable Road Users by Means of Neural Networks**
 [-]
-
-## Temp GIF
-
-| ![pascal_fantassin.gif](media/gif/pascal_fantassin.gif "pascal_fantassin.gif")  |
-|:--:|
-| *pascal_fantassin.gif* |
-
-## Temp PICS
-
-| ![chatrenet_automation_vs_fatalities.PNG](media/pics/chatrenet_automation_vs_fatalities.PNG "chatrenet_automation_vs_fatalities.PNG")  |
-|:--:|
-| *chatrenet_automation_vs_fatalities.PNG* |
-
-| ![gartner18.jpg](media/pics/gartner18.jpg "gartner18.jpg")  |
-|:--:|
-| *gartner18.jpg* |
-
-| ![hubmann_contruction_belief_tree.PNG](media/pics/hubmann_contruction_belief_tree.PNG "hubmann_contruction_belief_tree.PNG")  |
-|:--:|
-| *hubmann_contruction_belief_tree.PNG* |
-
-| ![pusse_architecture.PNG](media/pics/pusse_architecture.PNG "pusse_architecture.PNG")  |
-|:--:|
-| *pusse_architecture.PNG* |
-
-| ![rehder_DBN.PNG](media/pics/rehder_DBN.PNG "rehder_DBN.PNG")  |
-|:--:|
-| *rehder_DBN.PNG* |
-
-| ![schratter_belief.PNG](media/pics/schratter_belief.PNG "schratter_belief.PNG")  |
-|:--:|
-| *schratter_belief.PNG* |
-
-| ![schratter_risk_assessement.PNG](media/pics/schratter_risk_assessement.PNG "schratter_risk_assessement.PNG")  |
-|:--:|
-| *schratter_risk_assessement.PNG* |
-
-| ![vöge_keynote.JPG](media/pics/vöge_keynote.JPG "vöge_keynote.JPG")  |
-|:--:|
-| *vöge_keynote.JPG* |
-
-| ![vöge_sharing.jpg](media/pics/vöge_sharing.jpg "vöge_sharing.jpg")  |
-|:--:|
-| *vöge_sharing.jpg* |
-
-| ![weast_keynote.jpg](media/pics/weast_keynote.jpg "weast_keynote.jpg")  |
-|:--:|
-| *weast_keynote.jpg* |
