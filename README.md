@@ -1,11 +1,8 @@
 # My 10 takeaways from the 2019 Intelligent Vehicle Symposium
 
 !!!! WORK IN PROGRESS !!!!
-*If some pictures are not loaded, try to refresh the page.*
 
-| ![2019 Intelligent Vehicle Symposium](media/pics/iv19.jpg "2019 Intelligent Vehicle Symposium")  |
-|:--:|
-| *2019 Intelligent Vehicle Symposium* |
+*If some pictures are not loaded, try to refresh the page.*
 
 ```bash
 TL;DR:
@@ -20,6 +17,10 @@ TL;DR:
 - AD could be a disaster if perpetuating inequalities and ignoring shared mobility.
 - Some demos were impressive. But far from series production. # -> Back to work.
 ```
+
+| ![2019 Intelligent Vehicle Symposium](media/pics/iv19.jpg "2019 Intelligent Vehicle Symposium")  |
+|:--:|
+| *2019 Intelligent Vehicle Symposium* |
 
 Last week, experts from the autonomous driving (AD) world came together for the 2019 IEEE Intelligent Vehicle Symposium ([IV19](https://iv2019.org/)) in Paris to discuss about research and applications for autonomous driving.
 
@@ -50,19 +51,19 @@ Disclaimers:
   - [POMDP Formulation](#pomdp-formulation)
   - [POMDP Solvers](#pomdp-solvers)
 - [Reinforcement Learning](#reinforcement-learning)
-  - [Difference Learning / Planning](#difference-learning-/-planning)
+  - [Difference Learning vs Planning](#difference-learning-vs-planning)
   - [Pure RL for decision making in AD is hard](#pure-rl-for-decision-making-in-ad-is-hard)
   - [Using RL for parameter tuning](#using-rl-for-parameter-tuning)
   - [Combining Learning and Planning](#combining-learning-and-planning)
 - [Learning-based versus Non-Learning-based Approaches](#learning-based-versus-non-Learning-based-approaches)
-  - [Benefits of the Learning / Non-Learning Combination](#benefits-of-the-learning-/-non-learning-combination)
+  - [Benefits of the Learning + Non-Learning Combination](#benefits-of-the-learning-+-non-learning-combination)
   - [Learning-based Methods Now used in Prediction](#learning-based-methods-now-used-in-prediction)
-  - [Interpretability is not an Option](interpretability-is-not-an-option)
-  - [In Validation Process](in-validation-process)
-- [Uncertainty](#Uncertainty)
+  - [Interpretability is not an Option](#interpretability-is-not-an-option)
+  - [In Validation Process](#in-validation-process)
+- [Uncertainty](#uncertainty)
   - [Sources of uncertainty](#sources-of-uncertainty)
   - [Heteroscedastic Uncertainties](#heteroscedastic-uncertainties)
-  - [Unfreezing the Robot under Occlusion](#unfreezing-the-obot-under-occlusion)
+  - [Unfreezing the Robot under Occlusion](#unfreezing-the-robot-under-occlusion)
   - [Reducing Uncertainty](#reducing-uncertainty)
 - [Generalization in decision modules](#generalization-in-decision-modules)
   - [Generic scene representation](#generic-scene-representation)
@@ -169,7 +170,7 @@ One could used **inverse reinforcement learning** (IRL) to determine appropriate
 |:--:|
 | *Interesting to see how the belief tracker of the POMDP maintains hypotheses about occluded pedestrian. Source: (Schratter et al. 2019).* |
 
-Let's now consider the last two elements of the POMDP formulation: the **measurement** model and the **transition** model. Here, both models are supposed to be known, leading to a planning problem (see the section on [Difference Learning / Planning](#difference-learning-/-planning)). They express the **probability** of ending in an arbitrary state (resp. emitting an observation) given the selected action and the current state.
+Let's now consider the last two elements of the POMDP formulation: the **measurement** model and the **transition** model. Here, both models are supposed to be known, leading to a planning problem (see the section on [Difference Learning vs Planning](#difference-learning-vs-planning)). They express the **probability** of ending in an arbitrary state (resp. emitting an observation) given the selected action and the current state.
 
 It is not always possible to represent **directly their probability distributions**. A commonly used approach is to use a **generative model** instead. From a given state and action which, it generates a new hidden state (**transition** model) and observation (**measurement** model).
 
@@ -211,7 +212,7 @@ The notion of **_tree_** is important for **online** solving. From one **initial
 
 This section is structured as followed:
 
-- Difference Learning / Planning
+- Difference Learning vs Planning
 - Pure RL for decision making in AD is hard
 - Using RL for parameter tuning
 - Combining Learning and Planning
@@ -232,7 +233,7 @@ Interesting facts
 | 1     | NavA3C                   |
 | 0     | Model-based RL           |
 
-### Difference Learning / Planning
+### Difference Learning vs Planning
 
 The AD decision or AD control can be **formulated as a Markov Decision Process** (MDP), or its extension POMDP with partial observation. There are **two types of methods to solve** it, i.e. to find the optimal policy, depending if the transition and reward models are known or not:
 
@@ -299,12 +300,12 @@ My main take-away is that, as for the reinforcement learning section, a **hybrid
 
 The following is structure as follows:
 
-- Benefits of the Learning / Non-Learning Combination
+- Benefits of the Learning + Non-Learning Combination
 - Learning-based Methods Now used in Prediction
 - Interpretability is not an Option
 - In Validation Process
 
-### Benefits of the Learning / Non-Learning Combination
+### Benefits of the Learning + Non-Learning Combination
 
 This **need for such combination** is illustrated in (Schulz et al. 2019). A probabilistic mapping from context and route intention to action distribution is learnt with deep neural networks. The benchmark include a non-learnt approach. They show that for **short-term predictions** of up to around `2` seconds, all the **learning-based models outperform the rule-based action model**. But the rule-based model becomes **more accurate for predictions with very long horizons**, exceeding `15s`.
 
@@ -485,6 +486,201 @@ They show how it can be used to reduce uncertainty in the case of **occlusions**
 |:--:|
 | *From the behaviour of the other driver, the ego car can infer and become more confident about the probability of a pedestrian crossing. Source: (Sun et al. 2019).* |
 
+## Generalization in decision modules
+
+Most authors show the relevance of their approaches on one or few scenarios. Usually with a fix number of traffic participants and a specific/arbitrary road layout. I was wondering how these approaches can **generalize to a different road structure**, in diverse scenarios with **a various number of participants**.
+
+A first challenge concerns the **computation**. Scaling to more than two-agent interactions is challenging due to the **Curse of Dimensionality** (_problem caused by the exponential increase in volume associated with adding extra dimensions to Euclidean space_), as introduced by R. Bellman in 1957.
+
+I found two interesting methods:
+
+- Generic scene representation.
+- Scene decomposition methods.
+
+### Generic Scene Representation
+
+Generalization raises the **question of representation**. Vectors of **features** such as *distance to the other vehicle* and *relative velocity to the cyclist* can be used. But the **variation in the number of participants** will change the **size of the joint representation**. And the **non-constant size of the input** may be problematic for the algorithm, such as neural networks.
+
+Instead of describing the state of other participants with a vector and then **combining all the instance in one joint state vector**, **images representing the whole scene** can be used. This is done in (Joonatan and Folkesson 2019), where a generic visual representation is designed. The main advantage of representing the traffic scenario with an image is that number of traffic participants does not affect the size of the state and the computational complexity can be kept constant. Yet the resolution of the generated paths is dependent on the resolution used in image, `128`x`128` single-channel in this case. Moreover, the encoding of information such as the **semantic intention** may be tricky, especially if expressed with uncertainties.
+
+Several **hybrid representations**, i.e. the combination of an image and vector of some features, were used at IV19.
+
+In (Folkers, Rick, and Christof 2019), the state of the MDP is composed of an **ego feature vector** and a **obstacle grid**. In this cost map, also called _ternary perception map_, the target position is given as −1, free space is encoded by 0, while obstacles and lane boundaries are indicated by 1.
+
+| ![Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).](media/pics/folkers_perception_map.PNG "Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).")  |
+|:--:|
+| *Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).* |
+
+The idea of an **hybrid representation** is also used in (Pusse and Klusch 2019). The observation input for the IS-DESPOT solver contains, inter alia, a `84`x`84` image representing the intention of the other vehicles.
+
+### Scene Decomposition Methods
+
+**Online scene decomposition** is used in (Bouton et al. 2019). The idea is to **combine the utility functions of simple tasks** to approximate the solution of a **more complex task**.
+
+Here, the simple task aims at navigating the intersection assuming only one car, one pedestrian, and one obstacle. Including three agents enables to **capture interactions** between cars and pedestrians. This defines the so-called *canonical scenario*. In the presence of multiple cars and pedestrians, the global belief can be decomposed into **multiple instances of this canonical scenario**.
+
+Finally, the action is selected based on the most conservative instance, i.e. with **worst probability of success** and the **worst utility**.
+
+| ![Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).](media/pics/bouton_generalization.PNG "Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).")  |
+|:--:|
+| *Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).* |
+
+The utility decomposition method is also used in (Schratter et al. 2019a), where the simple task only considers one pedestrian.
+
+Nevertheless, such decomposition methods **do not capture all the interactions**, especially those between the other vehicles or pedestrians.
+
+This brings us to the topic of **interaction-aware reasoning**.
+
+## Considering interaction between traffic participants
+
+**Interaction-aware probabilistic decision making** is what most teams are targeting. The idea is to try to predict how ego actions could impact other traffic vehicles. **Predicting likely responses** is at the core of the human ability to navigate through a dense crowd, for instance in a train station. Such a skill is especially important for AD in **cooperative manoeuvres** such as *lane merging* and when considering *Vulnerable Road Users* (VRUs). Moreover, it allows for **negotiation between agents**.
+
+Three points are considered in this section:
+
+- The combination of prediction and planning.
+- The consideration of interaction in prediction.
+- The upcoming task of negotiation.
+
+### Combining prediction and planning
+
+Most AD software architectures **separate the prediction module and the planning module**. First, a trajectory of the surrounding vehicles is predicted. These **trajectories are then considered as obstacles** for the ego vehicle in the planning stage. But this separation results in a **reactive behaviour** which **does not consider interaction** during the trajectory planning.
+
+The POMDP formulation can incorporate prediction (forward roll-outs based on the belief state) and planning, which allows to model **interactive behaviour**.
+
+| ![Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).](media/pics/schörner_pomdp.PNG "Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).")  |
+|:--:|
+| *Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).* |
+
+### Interaction-aware prediction
+
+Prediction approaches can be divided into three groups.
+
+- In **Physics-based** models, traffic participants are assumed to keep a **constant velocity** (CV) or a **constant acceleration** (CA) for the next time step. The state of the observed vehicle can be **extrapolated** using kinematic *CA* or *CV* models. This usually works for **short horizons** (<`1s`) where **interaction does not play an important role**.
+- In **Manoeuvre-based** models, traffic participants are assumed to execute their intended maneuvers independently from other traffic. The task is to try to infer the underlying manoeuvre among a finite set of discrete manoeuvres (e.g. lane keeping or lane change). The past trajectory or vehicle features are used for this classification problem. Again, interactions are not considered.
+- In **Interaction-aware** models, future motion of each vehicle is assumed to be **influenced by other traffic participants**. An optimal predicted scene can be found by **minimizing the risk for all** the traffic participants. Such approaches provide a more reliable long-term prediction since, among other, they work on a symbolic level.
+
+Several interaction-aware models were presented at IV19. To be honest, prediction is not my expertise and I found most related papers not trivial to understand. Here is was I will remember.
+
+(Diehl et al. 2019) proposes to use Graph Neural Network (GNN). Interactions are modelled as directed edges leading from the up to 8 neighbouring vehicles to the ego vehicle.
+
+| ![Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).](media/pics/diehl_interaction_graph.PNG "Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).")  |
+|:--:|
+| *Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).* |
+
+While many were using neural networks, a **Dynamic Bayesian Network** (DBN) were used by (Pool, Kooij, and Gavrila 2019). They use the concept of **_environment context cues_** to model the interaction between the cyclist and the ego vehicle. For instance, by indicating whether the arm of the cyclist is raised.
+
+I noticed that two approaches were inspiring several IV19 works:
+
+- The **social LSTM framework** for human trajectory predictions from (Alahi et al. 2016). Each trajectory is modelled as one LSTM and the different LSTMs **share information through a social pooling layer**.
+- The **_DESIRE_** concept from (Lee et al. 2017). Trajectories are first generated using a **conditional variational auto-encoder** (CVAE), then ranked and refined using inverse optimal control (IOC) and finally used to build the scene context, encoded with a CNN.
+
+My next observation was that **conditional variational auto-encoder** (CVAE) and **generative adversarial imitation learning** (GAIL) were largely used for interaction-prediction.
+
+**CVAE** was used for instance in (Hu, Zhan, and Tomizuka 2019). The idea is to **jointly predict motions for pairs of interacting agents**. But not all vehicles are interacting with each other. This idea therefore to start by identifying the interacting pairs. To do that, intention probabilities are derived for each vehicle. Then, for each pair of vehicles, reference paths are used to **determine if a conflict point exists**. If not, their future trajectories will be independent from each other. For interacting pairs, their **joint motions are jointly predicted using a CVAE**.
+
+This idea of **first identifying interation** and **then predict trajectories** is also found in (J. Li et al. 2019). They introduce a **hierarchical** structure for Coordination and Trajectory Prediction System (CTPS). First, a **macro-level recognizes the coordination** between the multiple interactive agents. This information, together with on historical states and the context information, is used by the **micro-level pattern prediction module** to generate motion hypotheses.
+
+(Si and Liu 2019) shows that **GAIL** methods can learn interactive models. The approach, known as AGen (Adaptive Generative Model), is based on the learning method **PS-GAIL** (Parameter Sharing GAIL). However, it is not able to consider individual differences in the behaviour of each vehicle. PS-GAIL is therefore combined with RLS-PAA (Recursive Least Square Parameter Adaptation Algorithm) to achieve a better **adaptation to the multi-actor situation**.
+
+I was not familiar with GAIL before and was more interested by **IRL-based methods** to learn from expert demonstration. But while IRL is trying to infer the underlying MDP **reward function**, it does not give the policy directly. The **optimal policy has to be derived afterwards**. Moreover, IRL-based methods require to model the problem as an MDP. Which is not easy. From this point of view, GAIL offers a valuable advantage.
+
+### Negotiation as a next step
+
+> Merging is about creating space versus waiting for full space.
+
+Jack Weast argues that **RSS is adapted to negotiation**, since it defines a safety envelop around the vehicle that can be used to **test how the others will respond**. For complex interactive scenarios such as _merging_, _overtaking_ and _yielding_, the vehicle can go right to the limit of the envelop, whose size is defined by the **risk tolerance**.
+
+I did not hear so much about negotiation. Among of the papers, only one was mentioning the term "negotiation" more than once.
+
+An **affair to follow** (_maybe looking at game theory?_) together with the **promising GAIL- and CVAE-approaches**.
+
+## Scenarios and Datasets
+
+I was interested in three challenges about scenarios for testing decision modules:
+
+- How to **describe traffic scenarios**? What formalism / language to use?
+- Where to find **frequent crash scenarios**, i.e. where human drivers usually fail?
+- How to **generate critical scenarios** to test edge cases?
+- What **datasets** can be used to learn and test algorithms for prediction and decision making?
+
+These interrogations are addressed in this section.
+
+Before I start, do you know the difference between a *situation*, a *scene* and a *scenario*? How would you define them? These terms are not used consistently in the literature. (Ulbrich et al. 2015) proposed **consistent definitions** for each of these terms of context modelling.
+
+### Defining Scenarios
+
+(Queiroz, Berger, and Czarnecki 2019) deplores the **lack of a language to formally describe test scenarios** that cover the complexity of road traffic situations. This hinders the **reproducibility of tests** and impairs the exchangeability between tools. To address that, they introduced [GeoScenario](https://git.uwaterloo.ca/wise-lab/geoscenario), a domain-specific language for **scenario representation**. This language is built on top of Open Street Maps (OSM) primitives. GeoScenario has a similar goal to the file format [OpenSCENARIO](http://www.openscenario.org/), which **describes dynamic contents** in driving simulation applications and is frequently used together with [OpenDRIVE](http://www.opendrive.org/) for the static content.
+
+| ![JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).](media/pics/queiroz_geoScenario_tool.jpg "JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).")  |
+|:--:|
+| *JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).* |
+
+Another tool, [CommonRoad](https://commonroad.in.tum.de/), was used several times, especially since it implements highway scenario from the [NGSIM US 101 dataset](https://www.fhwa.dot.gov/publications/research/operations/07030/). The goal of this **collection of composable benchmarks for motion planning** on roads is to provide researchers with a means of evaluating and comparing their motion planners.
+
+To **represent the road network** in scenarios, I noticed that [Lanelets maps](https://github.com/phbender/liblanelet) (an open extension of the OSM format) are widely used (e.g. _GeoScenario_ and _CommonRoad_). The [Lanelets2 specification](https://github.com/fzi-forschungszentrum-informatik/lanelet2) is used in (Naumann et al. 2019a) to design a scenario with occlusion. Their experiment is based on a modified version of CommonROAD.
+
+### Common Critical Scenarios
+
+Most frequent crash scenarios can be retrieved from the National Highway Traffic Safety Administration (NHTSA - _pronounced “nit-suh”_) traffic crash data. This [NHTSA pre-crash typology](https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/pre-crash_scenario_typology-final_pdf_version_5-2-07.pdf) is for instance used by the [CARLA AD challenge](https://carlachallenge.org/challenge/nhtsa/) to **test submissions on common critical scenarios**.
+
+This **test evaluation** makes me think of the **driving license exams**. Humans are not tested on all possible scenarios. Instead, **a couple of situations is (randomly) sampled**, and the candidate is assessed on. This is how human driving skills are “validated”.
+
+(Pusse and Klusch 2019) used the [GIDAS](https://www.gidas.org/willkommen/) (German In-Depth Accident Study) analysis of several **thousands of accidents that happened in Germany** to create a **benchmark**. Scenarios are then virtually simulated with the open-source 3D driving simulator [OpenDS](https://opends.dfki.de/).
+
+The [EuroNCAP](https://www.euroncap.com/) test protocol for vulnerable road users (VRUs) is used in (Schratter et al. 2019b). The selected subset covers the most amount of accidents **involving pedestrians**. To avoid overly conservative behaviours, they **augmented the suite** of scenarios with a situation **involving occluded areas** at the side of the road.
+
+| ![Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).](media/pics/schratter_NCAP.PNG "Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).")  |
+|:--:|
+| *Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).* |
+
+Only `75`% of all pedestrian accidents are covered with these crossing scenarios.
+As for NHTSA, edge-case scenarios must be separately generated.
+
+### Generating edge-case scenarios
+
+(Klischat and Althoff 2019) present an approach to **generate critical scenarios** for testing motion planners in complex urban traffic situations.
+
+### Needs for New Datasets
+
+In many papers **real-world experiments are left for future works**. On reason it that it is difficult to **transfer models** derived from simulation or hand-crafted scenarios to real cars.
+
+This raises two needs:
+
+- Need for **more realistic simulators**.
+- Need for **richer traffic datasets** with **critical scenarios**.
+
+I do not addressed the question of **realistic simulators** here. Just mentioning one sentance that came several time at IV19:
+
+> Chicken and Egg problem: validating the simulator is probably harder than validating the algorithm itself.
+
+Real-world driving datasets are crucial for **learning-based approaches** which try to **model human driving styles** and behaviours.
+Their **diversity** and **completeness** are also essential to allow for **generalisation in the prediction and decision models**.
+
+Several collections of **scenarios recorded from real traffic** exist, as reviewed by (Kang, Yin, and Berger 2018) and listed by [scale.ai](https://scale.ai/open-datasets). But most entries **mainly cover perception**.
+
+Works on interactions with **Vulnerable Road Users** (VRUs) (i.e. pedestrians and cyclists) can use Stanford Drone ([SD](http://cvgl.stanford.edu/projects/uav_data/)) dataset, the Tsinghua-Daimler Cyclist ([TDC](http://www.gavrila.net/Datasets/Daimler_Pedestrian_Benchmark_D/Tsinghua-Daimler_Cyclist_Detec/tsinghua-daimler_cyclist_detec.html)) dataset, the Joint Attention for Autonomous Driving ([JAAD](http://data.nvision2.eecs.yorku.ca/JAAD_dataset/)) Dataset or the recently released Eurocity Persons ([ECP](https://eurocity-dataset.tudelft.nl/)) dataset.
+
+For **highway** and **intersection** scenarios, both [HighD](https://www.highd-dataset.com/) and [NGSIM](https://catalog.data.gov/dataset/next-generation-simulation-ngsim-vehicle-trajectories) were frequently mentioned during the workshops and poster sessions.
+Vehicle trajectories in HighD were recorded **using a drone** on German highways, while the NGSIM dataset contains vehicle trajectory data recorded for 45 minutes by **cameras mounted on top of a building** in San Francisco Bay area. If this highway real traffic data is widely used, participants of the SIPD workshop argued they were **_"overused"_** and **_"totally boring"_** since there are **lacking complex manoeuvres**.
+
+I realized that **dataset requirements differ between teams**. Some want **aerial views** for omniscience, especially to extract occlusion. Some prefer **data recorded from a vehicle** as (Pool, Kooij, and Gavrila 2019) that capture context cues to infer intention before planning, such as cyclists raising their arm before taking a turn.
+An illustration of these **particular needs** is that many works presented at IV19 were using their own motion driving simulator or **build their own dataset**. Nevertheless, these individual developments make **experiments hard to reproduce, compare and benchmark**. In addition, most of these hand-crafted datasets are **quite small**, which is not ideal for **training learning-based models**, and do not contain many diverse situations.
+
+The conclusion was clear: we are missing a dataset with **diverse, complex and critical situations** for interaction-aware prediction and decision making.
+
+| ![Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).](media/gif/interaction_dataset_nego.gif "Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).")  |
+|:--:|
+| *Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).* |
+
+Wei Zhan, co-organizer of the SIPD workshop, took the opportunity to **announce the release of a new dataset**, named [INTERSECTION](http://interaction-dataset.com/) dataset, for **socially interactive prediction and decision making**. Here are the main points I have noted:
+
+- It has been recorded from **drones** in diverse locations (e.g. US, Germany, China) with **different driving cultures** and traffic rules for **similar scenarios** (merging, roundabout, etc.).
+- Critical situations such as near-collision situations and slightly colliding accidents are included, which is interesting to **test edge-cases situations**.
+- Another promising feature is that **complex driving behaviours with negotiations** and **inexplicit right-of-way** are covered.
+- Finally, all scenarios come with an [Lanelet2](https://github.com/fzi-forschungszentrum-informatik/Lanelet2)-based HD-map with semantic information. It will also have **occlusion as ground truth** in the model, which is key to test social perception.
+
+Participants were **excited about this new dataset**. As Mykel Kochenderfer noted, it would be nice to also include **very unstructured traffic**. He suggested looking at a place like **India** with more than `17%` of the total world population and see if algorithms from western right-driving countries work there.
+
 ## Do not Forget Safety
 
 > “10 years ago, safety was often said to be for serious production, not for research. Now, it has become a research area.”
@@ -650,201 +846,6 @@ Mykel Kochenderfer ended his presentation by mentioning two remaining **challeng
 - It is still not clear **how to show** that the system that comes out of this **optimization** can be trusted.
 - **POMDPs with integrated model checkers** can be huge and works still need to be done to overcome the **computational tractability**.
 
-## Generalization in decision modules
-
-Most authors show the relevance of their approaches on one or few scenarios. Usually with a fix number of traffic participants and a specific/arbitrary road layout. I was wondering how these approaches can **generalize to a different road structure**, in diverse scenarios with **a various number of participants**.
-
-A first challenge concerns the **computation**. Scaling to more than two-agent interactions is challenging due to the **Curse of Dimensionality** (_problem caused by the exponential increase in volume associated with adding extra dimensions to Euclidean space_), as introduced by R. Bellman in 1957.
-
-I found two interesting methods:
-
-- Generic scene representation.
-- Scene decomposition methods.
-
-### Generic Scene Representation
-
-Generalization raises the **question of representation**. Vectors of **features** such as *distance to the other vehicle* and *relative velocity to the cyclist* can be used. But the **variation in the number of participants** will change the **size of the joint representation**. And the **non-constant size of the input** may be problematic for the algorithm, such as neural networks.
-
-Instead of describing the state of other participants with a vector and then **combining all the instance in one joint state vector**, **images representing the whole scene** can be used. This is done in (Joonatan and Folkesson 2019), where a generic visual representation is designed. The main advantage of representing the traffic scenario with an image is that number of traffic participants does not affect the size of the state and the computational complexity can be kept constant. Yet the resolution of the generated paths is dependent on the resolution used in image, `128`x`128` single-channel in this case. Moreover, the encoding of information such as the **semantic intention** may be tricky, especially if expressed with uncertainties.
-
-Several **hybrid representations**, i.e. the combination of an image and vector of some features, were used at IV19.
-
-In (Folkers, Rick, and Christof 2019), the state of the MDP is composed of an **ego feature vector** and a **obstacle grid**. In this cost map, also called _ternary perception map_, the target position is given as −1, free space is encoded by 0, while obstacles and lane boundaries are indicated by 1.
-
-| ![Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).](media/pics/folkers_perception_map.PNG "Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).")  |
-|:--:|
-| *Construction of the ternary perception map (c) used as part of the MDP state. Source: (Folkers, Rick, and Christof 2019).* |
-
-The idea of an **hybrid representation** is also used in (Pusse and Klusch 2019). The observation input for the IS-DESPOT solver contains, inter alia, a `84`x`84` image representing the intention of the other vehicles.
-
-### Scene Decomposition Methods
-
-**Online scene decomposition** is used in (Bouton et al. 2019). The idea is to **combine the utility functions of simple tasks** to approximate the solution of a **more complex task**.
-
-Here, the simple task aims at navigating the intersection assuming only one car, one pedestrian, and one obstacle. Including three agents enables to **capture interactions** between cars and pedestrians. This defines the so-called *canonical scenario*. In the presence of multiple cars and pedestrians, the global belief can be decomposed into **multiple instances of this canonical scenario**.
-
-Finally, the action is selected based on the most conservative instance, i.e. with **worst probability of success** and the **worst utility**.
-
-| ![Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).](media/pics/bouton_generalization.PNG "Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).")  |
-|:--:|
-| *Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).* |
-
-The utility decomposition method is also used in (Schratter et al. 2019a), where the simple task only considers one pedestrian.
-
-Nevertheless, such decomposition methods **do not capture all the interactions**, especially those between the other vehicles or pedestrians.
-
-This brings us to the topic of **interaction-aware reasoning**.
-
-## Considering interaction between traffic participants
-
-**Interaction-aware probabilistic decision making** is what most teams are targeting. The idea is to try to predict how ego actions could impact other traffic vehicles. **Predicting likely responses** is at the core of the human ability to navigate through a dense crowd, for instance in a train station. Such a skill is especially important for AD in **cooperative manoeuvres** such as *lane merging* and when considering *Vulnerable Road Users* (VRUs). Moreover, it allows for **negotiation between agents**.
-
-Three points are considered in this section:
-
-- The combination of prediction and planning.
-- The consideration of interaction in prediction.
-- The upcoming task of negotiation.
-
-### Combining prediction and planning
-
-Most AD software architectures **separate the prediction module and the planning module**. First, a trajectory of the surrounding vehicles is predicted. These **trajectories are then considered as obstacles** for the ego vehicle in the planning stage. But this separation results in a **reactive behaviour** which **does not consider interaction** during the trajectory planning.
-
-The POMDP formulation can incorporate prediction (forward roll-outs based on the belief state) and planning, which allows to model **interactive behaviour**.
-
-| ![Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).](media/pics/schörner_pomdp.PNG "Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).")  |
-|:--:|
-| *Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).* |
-
-### Interaction-aware prediction
-
-Prediction approaches can be divided into three groups.
-
-- In **Physics-based** models, traffic participants are assumed to keep a **constant velocity** (CV) or a **constant acceleration** (CA) for the next time step. The state of the observed vehicle can be **extrapolated** using kinematic *CA* or *CV* models. This usually works for **short horizons** (<`1s`) where **interaction does not play an important role**.
-- In **Manoeuvre-based** models, traffic participants are assumed to execute their intended maneuvers independently from other traffic. The task is to try to infer the underlying manoeuvre among a finite set of discrete manoeuvres (e.g. lane keeping or lane change). The past trajectory or vehicle features are used for this classification problem. Again, interactions are not considered.
-- In **Interaction-aware** models, future motion of each vehicle is assumed to be **influenced by other traffic participants**. An optimal predicted scene can be found by **minimizing the risk for all** the traffic participants. Such approaches provide a more reliable long-term prediction since, among other, they work on a symbolic level.
-
-Several interaction-aware models were presented at IV19. To be honest, prediction is not my expertise and I found most related papers not trivial to understand. Here is was I will remember.
-
-(Diehl et al. 2019) proposes to use Graph Neural Network (GNN). Interactions are modelled as directed edges leading from the up to 8 neighbouring vehicles to the ego vehicle.
-
-| ![Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).](media/pics/diehl_interaction_graph.PNG "Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).")  |
-|:--:|
-| *Graph Neural Networks are used to model interaction between traffic participants. Source: (Diehl et al. 2019).* |
-
-While many were using neural networks, a **Dynamic Bayesian Network** (DBN) were used by (Pool, Kooij, and Gavrila 2019). They use the concept of **_environment context cues_** to model the interaction between the cyclist and the ego vehicle. For instance, by indicating whether the arm of the cyclist is raised.
-
-I noticed that two approaches were inspiring several IV19 works:
-
-- The **social LSTM framework** for human trajectory predictions from (Alahi et al. 2016). Each trajectory is modelled as one LSTM and the different LSTMs **share information through a social pooling layer**.
-- The **_DESIRE_** concept from (Lee et al. 2017). Trajectories are first generated using a **conditional variational auto-encoder** (CVAE), then ranked and refined using inverse optimal control (IOC) and finally used to build the scene context, encoded with a CNN.
-
-My next observation was that **conditional variational auto-encoder** (CVAE) and **generative adversarial imitation learning** (GAIL) were largely used for interaction-prediction.
-
-**CVAE** was used for instance in (Hu, Zhan, and Tomizuka 2019). The idea is to **jointly predict motions for pairs of interacting agents**. But not all vehicles are interacting with each other. This idea therefore to start by identifying the interacting pairs. To do that, intention probabilities are derived for each vehicle. Then, for each pair of vehicles, reference paths are used to **determine if a conflict point exists**. If not, their future trajectories will be independent from each other. For interacting pairs, their **joint motions are jointly predicted using a CVAE**.
-
-This idea of **first identifying interation** and **then predict trajectories** is also found in (J. Li et al. 2019). They introduce a **hierarchical** structure for Coordination and Trajectory Prediction System (CTPS). First, a **macro-level recognizes the coordination** between the multiple interactive agents. This information, together with on historical states and the context information, is used by the **micro-level pattern prediction module** to generate motion hypotheses.
-
-(Si and Liu 2019) shows that **GAIL** methods can learn interactive models. The approach, known as AGen (Adaptive Generative Model), is based on the learning method **PS-GAIL** (Parameter Sharing GAIL). However, it is not able to consider individual differences in the behaviour of each vehicle. PS-GAIL is therefore combined with RLS-PAA (Recursive Least Square Parameter Adaptation Algorithm) to achieve a better **adaptation to the multi-actor situation**.
-
-I was not familiar with GAIL before and was more interested by **IRL-based methods** to learn from expert demonstration. But while IRL is trying to infer the underlying MDP **reward function**, it does not give the policy directly. The **optimal policy has to be derived afterwards**. Moreover, IRL-based methods require to model the problem as an MDP. Which is not easy. From this point of view, GAIL offers a valuable advantage.
-
-### Negotiation as a next step
-
->> Merging is about creating space versus waiting for full space.
-
-Jack Weast argues that **RSS is adapted to negotiation**, since it defines a safety envelop around the vehicle that can be used to **test how the others will respond**. For complex interactive scenarios such as _merging_, _overtaking_ and _yielding_, the vehicle can go right to the limit of the envelop, whose size is defined by the **risk tolerance**.
-
-I did not hear so much about negotiation. Among of the papers, only one was mentioning the term "negotiation" more than once.
-
-An **affair to follow** (_maybe looking at game theory?_) together with the **promising GAIL- and CVAE-approaches**.
-
-## Scenarios and Datasets
-
-I was interested in three challenges about scenarios for testing decision modules:
-
-- How to **describe traffic scenarios**? What formalism / language to use?
-- Where to find **frequent crash scenarios**, i.e. where human drivers usually fail?
-- How to **generate critical scenarios** to test edge cases?
-- What **datasets** can be used to learn and test algorithms for prediction and decision making?
-
-These interrogations are addressed in this section.
-
-Before I start, do you know the difference between a *situation*, a *scene* and a *scenario*? How would you define them? These terms are not used consistently in the literature. (Ulbrich et al. 2015) proposed **consistent definitions** for each of these terms of context modelling.
-
-### Defining Scenarios
-
-(Queiroz, Berger, and Czarnecki 2019) deplores the **lack of a language to formally describe test scenarios** that cover the complexity of road traffic situations. This hinders the **reproducibility of tests** and impairs the exchangeability between tools. To address that, they introduced [GeoScenario](https://git.uwaterloo.ca/wise-lab/geoscenario), a domain-specific language for **scenario representation**. This language is built on top of Open Street Maps (OSM) primitives. GeoScenario has a similar goal to the file format [OpenSCENARIO](http://www.openscenario.org/), which **describes dynamic contents** in driving simulation applications and is frequently used together with [OpenDRIVE](http://www.opendrive.org/) for the static content.
-
-| ![JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).](media/pics/queiroz_geoScenario_tool.jpg "JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).")  |
-|:--:|
-| *JOSM adapted to design GeoScenario. Source: (Queiroz, Berger, and Czarnecki 2019).* |
-
-Another tool, [CommonRoad](https://commonroad.in.tum.de/), was used several times, especially since it implements highway scenario from the [NGSIM US 101 dataset](https://www.fhwa.dot.gov/publications/research/operations/07030/). The goal of this **collection of composable benchmarks for motion planning** on roads is to provide researchers with a means of evaluating and comparing their motion planners.
-
-To **represent the road network** in scenarios, I noticed that [Lanelets maps](https://github.com/phbender/liblanelet) (an open extension of the OSM format) are widely used (e.g. _GeoScenario_ and _CommonRoad_). The [Lanelets2 specification](https://github.com/fzi-forschungszentrum-informatik/lanelet2) is used in (Naumann et al. 2019a) to design a scenario with occlusion. Their experiment is based on a modified version of CommonROAD.
-
-### Common Critical Scenarios
-
-Most frequent crash scenarios can be retrieved from the National Highway Traffic Safety Administration (NHTSA - _pronounced “nit-suh”_) traffic crash data. This [NHTSA pre-crash typology](https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/pre-crash_scenario_typology-final_pdf_version_5-2-07.pdf) is for instance used by the [CARLA AD challenge](https://carlachallenge.org/challenge/nhtsa/) to **test submissions on common critical scenarios**.
-
-This **test evaluation** makes me think of the **driving license exams**. Humans are not tested on all possible scenarios. Instead, **a couple of situations is (randomly) sampled**, and the candidate is assessed on. This is how human driving skills are “validated”.
-
-(Pusse and Klusch 2019) used the [GIDAS](https://www.gidas.org/willkommen/) (German In-Depth Accident Study) analysis of several **thousands of accidents that happened in Germany** to create a **benchmark**. Scenarios are then virtually simulated with the open-source 3D driving simulator [OpenDS](https://opends.dfki.de/).
-
-The [EuroNCAP](https://www.euroncap.com/) test protocol for vulnerable road users (VRUs) is used in (Schratter et al. 2019b). The selected subset covers the most amount of accidents **involving pedestrians**. To avoid overly conservative behaviours, they **augmented the suite** of scenarios with a situation **involving occluded areas** at the side of the road.
-
-| ![Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).](media/pics/schratter_NCAP.PNG "Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).")  |
-|:--:|
-| *Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).* |
-
-Only `75`% of all pedestrian accidents are covered with these crossing scenarios.
-As for NHTSA, edge-case scenarios must be separately generated.
-
-### Generating edge-case scenarios
-
-(Klischat and Althoff 2019) present an approach to **generate critical scenarios** for testing motion planners in complex urban traffic situations.
-
-### Needs for New Datasets
-
-In many papers **real-world experiments are left for future works**. On reason it that it is difficult to **transfer models** derived from simulation or hand-crafted scenarios to real cars.
-
-This raises two needs:
-
-- Need for **more realistic simulators**.
-- Need for **richer traffic datasets** with **critical scenarios**.
-
-I do not addressed the question of **realistic simulators** here. Just mentioning one sentance that came several time at IV19:
-
-> Chicken and Egg problem: validating the simulator is probably harder than validating the algorithm itself.
-
-Real-world driving datasets are crucial for **learning-based approaches** which try to **model human driving styles** and behaviours.
-Their **diversity** and **completeness** are also essential to allow for **generalisation in the prediction and decision models**.
-
-Several collections of **scenarios recorded from real traffic** exist, as reviewed by (Kang, Yin, and Berger 2018) and listed by [scale.ai](https://scale.ai/open-datasets). But most entries **mainly cover perception**.
-
-Works on interactions with **Vulnerable Road Users** (VRUs) (i.e. pedestrians and cyclists) can use Stanford Drone ([SD](http://cvgl.stanford.edu/projects/uav_data/)) dataset, the Tsinghua-Daimler Cyclist ([TDC](http://www.gavrila.net/Datasets/Daimler_Pedestrian_Benchmark_D/Tsinghua-Daimler_Cyclist_Detec/tsinghua-daimler_cyclist_detec.html)) dataset, the Joint Attention for Autonomous Driving ([JAAD](http://data.nvision2.eecs.yorku.ca/JAAD_dataset/)) Dataset or the recently released Eurocity Persons ([ECP](https://eurocity-dataset.tudelft.nl/)) dataset.
-
-For **highway** and **intersection** scenarios, both [HighD](https://www.highd-dataset.com/) and [NGSIM](https://catalog.data.gov/dataset/next-generation-simulation-ngsim-vehicle-trajectories) were frequently mentioned during the workshops and poster sessions.
-Vehicle trajectories in HighD were recorded **using a drone** on German highways, while the NGSIM dataset contains vehicle trajectory data recorded for 45 minutes by **cameras mounted on top of a building** in San Francisco Bay area. If this highway real traffic data is widely used, participants of the SIPD workshop argued they were **_"overused"_** and **_"totally boring"_** since there are **lacking complex manoeuvres**.
-
-I realized that **dataset requirements differ between teams**. Some want **aerial views** for omniscience, especially to extract occlusion. Some prefer **data recorded from a vehicle** as (Pool, Kooij, and Gavrila 2019) that capture context cues to infer intention before planning, such as cyclists raising their arm before taking a turn.
-An illustration of these **particular needs** is that many works presented at IV19 were using their own motion driving simulator or **build their own dataset**. Nevertheless, these individual developments make **experiments hard to reproduce, compare and benchmark**. In addition, most of these hand-crafted datasets are **quite small**, which is not ideal for **training learning-based models**, and do not contain many diverse situations.
-
-The conclusion was clear: we are missing a dataset with **diverse, complex and critical situations** for interaction-aware prediction and decision making.
-
-| ![Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).](media/gif/interaction_dataset_nego.gif "Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).")  |
-|:--:|
-| *Scenario involving negotiation in the new INTERnational, Adversarial and Cooperative moTION ([INTERACTION](http://interaction-dataset.com/)) Dataset. [Source](http://interaction-dataset.com/).* |
-
-Wei Zhan, co-organizer of the SIPD workshop, took the opportunity to **announce the release of a new dataset**, named [INTERSECTION](http://interaction-dataset.com/) dataset, for **socially interactive prediction and decision making**. Here are the main points I have noted:
-
-- It has been recorded from **drones** in diverse locations (e.g. US, Germany, China) with **different driving cultures** and traffic rules for **similar scenarios** (merging, roundabout, etc.).
-- Critical situations such as near-collision situations and slightly colliding accidents are included, which is interesting to **test edge-cases situations**.
-- Another promising feature is that **complex driving behaviours with negotiations** and **inexplicit right-of-way** are covered.
-- Finally, all scenarios come with an [Lanelet2](https://github.com/fzi-forschungszentrum-informatik/Lanelet2)-based HD-map with semantic information. It will also have **occlusion as ground truth** in the model, which is key to test social perception.
-
-Participants were **excited about this new dataset**. As Mykel Kochenderfer noted, it would be nice to also include **very unstructured traffic**. He suggested looking at a place like **India** with more than `17%` of the total world population and see if algorithms from western right-driving countries work there.
-
 ## AD and Society
 
 _This section solely reflects the opinion and conclusion of its authors, and not ERS Labs AG._
@@ -932,7 +933,7 @@ The benefit of safer vehicles technologies (not AD) introduced in the US between
 
 In the recent excellent [article](https://www.nature.com/articles/d41586-019-01473-3) “Driverless cars: researchers have made a wrong turn”, Ashley Nunes builds on that and asks:
 
->> If there is a group in the United States that stands to benefit most from the life-saving potential of self-driving technology, it’s those who live in the greatest poverty, but only if they can afford the technology. Driverless-car technology might have the potential to improve public health and save lives, but if those who most need it don’t have access, whose lives would we actually be saving?
+> If there is a group in the United States that stands to benefit most from the life-saving potential of self-driving technology, it’s those who live in the greatest poverty, but only if they can afford the technology. Driverless-car technology might have the potential to improve public health and save lives, but if those who most need it don’t have access, whose lives would we actually be saving?
 
 | ![We tend to overestimate the effect of a technology in the short run and underestimate the effect in the long run. [Source](https://www.gartner.com/smarterwithgartner/5-trends-emerge-in-gartner-hype-cycle-for-emerging-technologies-2018/).](media/pics/gartner18.jpg "We tend to overestimate the effect of a technology in the short run and underestimate the effect in the long run. [Source](https://www.gartner.com/smarterwithgartner/5-trends-emerge-in-gartner-hype-cycle-for-emerging-technologies-2018/).")  |
 |:--:|
