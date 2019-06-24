@@ -106,6 +106,97 @@ Additional facts
 The first day I could take part to the workshop _“Prediction and Decision Making for Socially Interactive Autonomous Driving_, shortened [**SIPD**](https://sites.google.com/berkeley.edu/iv19-interaction).
 It was fantastic to have **Mykel Kochenderfer**, from the Department of Aeronautics and Astronautics at Stanford University, since his lab is regarded as one top reference in the topic of **decision making under uncertainty**. He explained how he is trying to **transfer to the automotive domain** what he has learnt from his **works for the aviation domain** such as traffic collision avoidance system. **Looking for solutions in other industries** (e.g. _aviation_ and _pharmaceutic_ sectors) was a recurring idea during the four days. Especially for **safety validation** and for **risk assessment**.
 
+### POMDP Benefits
+
+The POMDP formulation offers several advantages.
+
+- As an MDP, it is meant for **sequential decision process**, seeking optimal policies for **long-term objectives**, contrary to reactive approaches. It is for instance benefitial for highway exit cases where a long planning horizon is required.
+- As a **belief-state planner** with **probabilistic transition and measurement models**, it can deal with several sources of uncertainty to make **uncertainty-aware decisions**:
+  - uncertainty in sensor measurements (perception)
+  - uncertainty in car controls
+  - partial observability and stochasticity of other traffic participants
+  - limited information and understanding about the environment
+- As a **generative model**, it can use its belief on the intention of other participants to **make prediction**. Prediction and planning can hence be done in the same module, **avoiding the loss of information**.
+
+### POMDP Formulation
+
+A POMDP is defined by six elements (plus a discount factor and a horizon):
+
+- A **state** space,
+- An **observation** space,
+- An **action** space,
+- A **reward** function,
+- A **measurement** model,
+- And a **transition** model.
+
+Authors usually reserve one section per element, together with a part about **_belief tracking_**.
+
+For the Markov property to be valid, the **state** should contain all information necessary to predict future states. But choosing the right level of representation is critical, as discussed in the subsequent section on [generalization](#generalization-in-decision-modules). **Static background knowledge** such as road network topology, road geometry, static objects like buildings or parking vehicles **should not be included in the state space** as it might be accessed at any time.
+
+In a **partially observable MDP** (POMDP), the agent **does not have a full access to the state**. The **probabilistic distribution over the current state** is available but not the state itself. It makes use of the observation to **maintain** (or _track_) some belief over the state. This belief will be used to select an action.
+
+Most belief trackers use some **particle filters as a belief update algorithm**. (Bouton et al. 2019b) shows that an **ensemble of RNN** can **emulate the role of a particle filter**. Several RNNs are trained on independent data sets and during inference, each one outputs a belief. As I understood, these believes are treated uniformly.
+
+The **observation** is usually a manually defined **vector of features** and sometimes an **image** such as a top view scene. It can also be a concatenation of both, as in (Folkers, Rick, and Christof 2019) or in (Pusse and Klusch 2019) where the last received reward, the last executed action and the current car velocity come to enrich the car intention RGB image.
+
+| ![The input of the RL network is composed of a ternary perception map and a target state. Source: (Folkers, Rick, and Christof 2019).](media/pics/folkers_hybrid_input.PNG "The input of the RL network is composed of a ternary perception map and a target state. Source: (Folkers, Rick, and Christof 2019).")  |
+|:--:|
+| *The input of the RL network is composed of a ternary perception map and a target state. Source: (Folkers, Rick, and Christof 2019).* |
+
+The **observation function** usually models the **perception noise**. For instance, (Bouton et al. 2019) uses a Gaussian distribution around the position and velocity. They also **add false positive** and **false negative detections** of cars and pedestrian. This should increase the **robustness** of the approach.
+
+The **hidden part of the state** (sometimes called **_latent variable_**) usually describes the **intention** of other participants. It can be one **manoeuvre classification** (e.g. _the other vehicle is completing the "go straight" manoeuvre_), a goal point or **target destination** (e.g. _the other vehicle wants to reach the third exit of the round-about_), or an **intended route** among a set of predefined routes as in (Joonatan and Folkesson 2019). Sometimes, other drivers are assumed to follow **driver parametric models** such as Intelligent Driver Model (**IDM**). In this case, the parameters are hidden, and their values are tracked within the belief.
+
+Most approaches apply the **path-velocity decomposition**. This means the **path** (list of waypoints) is planned separately from the **velocity profile**. In other words, one decides for the **steering commands** (_lateral control_), while the other takes care of the **acceleration** (_longitudinal control_). This reduces the problem size. Most IV19 contributions using POMDPs model the sequential decision problem about the **longitudinal control** as a POMDP, while some **pre-defined paths** can be extracted from the map. For instance (Bouton et al. 2019b) uses the discrete set {`−4m/s2`, `−2m/s2`, `0m/s2`, `2m/s2`}. While most **state spaces** are **continuous** or **hybrid** (some features are continuous while other are discrete), working with a **continuous action space** is still hard and not so common. The [POMCPOW](https://github.com/JuliaPOMDP/POMCPOW.jl) algorithm from (Sunberg and Kochenderfer 2017) uses progressive widening and weighted particle filtering to approximately solve POMDPs with continuous state, action, and observation spaces. It has been mentioned several times during the SIPD workshop and is worth being investigated.
+
+I was surprised to see most POMDPs working with **low level actions** (acceleration mainly), as opposed to some **semantic manoeuvres**. (Schörner et al. 2019) suggests reasoning about higher level behaviours. For instance, _lane changes_, _overtaking_ or _following the vehicle in front_. An underlying **motion planning unit** can then implement the selected manoeuvre into low level commands. Most participants to the workshop argue for such a **hierarchy between the decision modules**, as the 3M concept of (Chauvin 2018), and the use of **higher abstraction actions** in the POMDP. One challenge is the **communication and especially the feedback loop** between the manoeuvre selection module and the motion planning module (MPC-based for instance).
+
+(Folkers, Rick, and Christof 2019) note that manoeuvres _drive_ and _stop_ require a rather different behaviour of the agent. Hence two policies (the _DRIVER_ and the _STOPPER_) are separated, using **two different reward functions**. It requires a **switch**, such as the **state machine** of (Kapania et al. 2019).
+
+**Reward functions** are usually combination of several terms. It shoud encourage the agent to _reach the goal_, _avoid collisions_, _avoid deviation from a predefined path_ or _from a desired speed_, consider _passenger comfort_, consider _social behaviour_ ... The question is then **how to weight the different contributions**. This can be very challenging, as acknowledged by (Schratter et al. 2019a) where a tuning of the reward function is performed.
+
+One could used **inverse reinforcement learning** (IRL) to determine appropriate values for the reward function. (Sun et al. 2019) learns the cost function of an MPC is via IRL, but I did not see any IRL used for POMDP. For sure this will be done in the future.
+
+(Folkers, Rick, and Christof 2019) organizes the training into two phases and **varies the weighting of each reward contributions** between both. When the policy learns to get high rewards in the first phase, additional behaviours such as an appropriate speed and small steering angles are considered.
+
+| ![For each time step, the policy tree is expanded down and the first action (`a1` or `a2`) of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)](media/pics/hubmann_contruction_belief_tree.PNG "For each time step, the policy tree is expanded down and the first action (`a1` or `a2`) of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)")  |
+|:--:|
+| *For each time step, the policy tree is expanded down and the first action, `a1` or `a2`, of the most promising path is selected. The belief, represented by a set of particles, is updated at each transition. Source: (Hubmann et al. 2019)* |
+
+Let's now consider the last two elements of the POMDP formulation: the **measurement** model and the **transition** model. Here, both models are supposed to be known, leading to a planning problem (see the section on [Difference Learning / Planning](#difference-learning-/-planning)). They express the **probability** of ending in an arbitrary state (resp. emitting an observation) given the selected action and the current state.
+
+It is not always possible to represent **directly their probability distributions**. A commonly used approach is to use a **generative model** instead. From a given state and action which, it generates a new hidden state (**transition** model) and observation (**measurement** model).
+
+The transition model usually holds **one part for the ego vehicles** whose state is fully known and **another part for the dynamic obstacles**. The deterministic _bicycle kinematic model_ of (Kong et al. 2015) is widely used to derive the new position, based on the current ego position, the current vehicle and the selected acceleration.
+
+**Describing the transition for other participants** is more challenging since it requires a **driver behaviour model**. Such models are not restricted to forward simulation-based motion planning. They are also used as transition models for iterative trajectory prediction and for filtering-based intention estimation (e.g. with DBN). One simple option is to assume **constant velocity** (CV) of the observed vehicle. It can be extended with **additive noise** on both the position and the velocity, as implemented in (Schörner et al. 2019). The volume of noise can be fix or not: (Schulz et al. 2019) learns the **variance in a driver’s actions** to have a **context-dependent magnitude of uncertainty** in the transition model.
+
+Another possibility is to infer the action of other participant, by assuming they follow the Intelligent Driver Model (IDM). IDM is a _crash-free microscopic car-following model_ that is widely applied for driver intention estimation and for **modelling how others react to specific plans** of an AD vehicle. It estimates **longitudinal dynamic** speed controls.
+
+Besides point-mass models and probabilitic approaches, (Schratter et al. 2019a) uses a simple **reachability** model. Depending on the current pedestrian state, future positions for the pedestrian are computed based on a **set of possible acceleration values**.
+
+### POMDP solvers
+
+Solving the POMDP means **finding the optimal policy**, i.e. the function that tells which action to take given any state to **maximize some notion of cumulative reward**. As a probabilistic non-linear optimization problem under state uncertainty, it is hard to solve, and many methods rely on the **approximation of the optimal policy**.
+
+The **lack of documentations or tutorials** of common solvers was mentioned several times. [POMDPs.jl](http://juliapomdp.github.io/POMDPs.jl/latest/), a Julia-based interface for defining, solving, and simulating POMDPs, was praised for its usability and active development.
+
+A POMDP solver can be said to be **_“offline”_**, if the policy is determined beforehand, or **_“online”_** if it seeks the optimal immediate action **for the current belief**. Most approaches presented at IV19 use **online solvers**.
+
+| ![Example of construction of a policy tree in an online solver. [Source](https://papers.nips.cc/paper/5189-despot-online-pomdp-planning-with-regularization.pdf)](media/pics/somani_despot_tree.PNG "Example of construction of a policy tree in an online solver. [Source](https://papers.nips.cc/paper/5189-despot-online-pomdp-planning-with-regularization.pdf)")  |
+|:--:|
+| *Example of construction of a policy tree in an online solver. [Source](https://papers.nips.cc/paper/5189-despot-online-pomdp-planning-with-regularization.pdf)* |
+
+The notion of **_tree_** is important for **online** solving. From one **initial state** (or belief on it), one could **consider all the possible actions** and sample from the transition model to derive new states (and new believes on them). One option could then repeat the process to **expand the policy tree up to a given horizon**. Finally, the **reward collected on each path** in this tree could be counted and the first action on the best path can be selected. This is a very simplified (an non-efficient) description of the idea of online methods. An efficient method to do that is to use **Monte Carlo Tree Search** ([MCTS]( https://en.wikipedia.org/wiki/Monte_Carlo_tree_search)). This type of algorithms is particularly appropriate for **online decision-making**. Here are some advantages:
+
+- Generating the **full tree** would be very expensive. Instead, MCTS works by **sampling episodes**.
+- Contrary to optimisation methods like **A***, MCTS is said **“anytime”**, i.e. it **can return a valid solution even if it is interrupted before it ends**. It is expected to find better and better solutions the longer it keeps running.
+- For the construction of the belief tree to be efficient, it is important to **guide the search with a heuristic**. At each of the action nodes, a **utility function** `U(b, a)` (or _value function_), tries to **estimate the cumulative reward** that the agent will get if it takes the action `a` being in belief `b` and then follows the policy. This heuristic, together with the **number of times the action node has been visited** serve to decide which node to choose when expanding the tree (UCB-based exploration and exploitation). One very promising approach is to use learning methods (like RL) to **learn this utility function** (detailed in the section [Combining Learning and Planning](#combining-learning-and-planning))  
+- **Recycling the constructed tree** at the next search can be beneficial from the computational point of view and make MCTS methods very efficient.
+
+(Schörner et al. 2019) and (Hubmann et al. 2019) are using [**TAPIR**](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir), which is a software toolkit implementation of the online solver Adaptive Belief Tree (ABT).
+(Pusse and Klusch 2019) is extended the online solver [**DESPOT**](https://github.com/AdaCompNUS/despot) with **Importance Sampling** to enable outcomes that have a low probability of occurring, e.g. crashes to be sample. It reminds me the [Prioritized Experience Replay](https://arxiv.org/abs/1511.05952) used to replay important transitions more frequently in DQN.
+
 ## Reinforcement Learning
 
 This section is structured as followed:
@@ -343,9 +434,7 @@ Do you know how to **measure the difference between two probability distribution
 
 While most of these methods for perception and decision-making **output an uncertainty measure**, they treat the information from localisation and perception as **point estimates** (with zero variance). Nevertheless, the **propagation of uncertainty measurements through all the AD modules** is essential.
 
-(Bouton et al. 2019) model the perception noise by a Gaussian distribution around the position and velocity measurements. They also **add false positive** and **false negative detections** of cars and pedestrian.
-
-More generally, the **environment representation** based on **probabilistic occupancy grids** used in (Barbier et al. 2019) seems appropriate to capture the perception uncertainty.
+The **environment representation** based on **probabilistic occupancy grids** used in (Barbier et al. 2019) seems appropriate to capture the perception uncertainty.
 
 ### Unfreezing the Robot under Occlusion
 
@@ -1060,10 +1149,6 @@ Zernetsch, Stefan et al. [2019].
 | ![chatrenet_automation_vs_fatalities.PNG](media/pics/chatrenet_automation_vs_fatalities.PNG "chatrenet_automation_vs_fatalities.PNG")  |
 |:--:|
 | *chatrenet_automation_vs_fatalities.PNG* |
-
-| ![folkers_hybrid_input.PNG](media/pics/folkers_hybrid_input.PNG "folkers_hybrid_input.PNG")  |
-|:--:|
-| *folkers_hybrid_input.PNG* |
 
 | ![gartner18.jpg](media/pics/gartner18.jpg "gartner18.jpg")  |
 |:--:|
