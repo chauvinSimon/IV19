@@ -53,34 +53,34 @@ Disclaimers:
 - [Reinforcement Learning](#reinforcement-learning)
   - [Difference Learning vs Planning](#difference-learning-vs-planning)
   - [Pure RL for decision making in AD is hard](#pure-rl-for-decision-making-in-ad-is-hard)
-  - [Using RL for parameter tuning](#using-rl-for-parameter-tuning)
+  - [RL for Parameter Tuning](#using-rl-for-parameter-tuning)
   - [Combining Learning and Planning](#combining-learning-and-planning)
 - [Learning-based versus Non-Learning-based Approaches](#learning-based-versus-non-Learning-based-approaches)
-  - [Benefits of the Learning + Non-Learning Combination](#benefits-of-the-learning-+-non-learning-combination)
-  - [Learning-based Methods Now used in Prediction](#learning-based-methods-now-used-in-prediction)
+  - [Benefits of the Learning with Non-Learning Combination](#benefits-of-the-learning-+-non-learning-combination)
+  - [Learning-based Methods for Prediction](#learning-based-methods-now-used-in-prediction)
   - [Interpretability is not an Option](#interpretability-is-not-an-option)
-  - [In Validation Process](#in-validation-process)
+  - [For Validation Process](#in-validation-process)
 - [Uncertainty](#uncertainty)
-  - [Sources of uncertainty](#sources-of-uncertainty)
+  - [Sources of Uncertainty](#sources-of-uncertainty)
   - [Heteroscedastic Uncertainties](#heteroscedastic-uncertainties)
   - [Unfreezing the Robot under Occlusion](#unfreezing-the-robot-under-occlusion)
   - [Reducing Uncertainty](#reducing-uncertainty)
-- [Generalization in decision modules](#generalization-in-decision-modules)
-  - [Generic scene representation](#generic-scene-representation)
+- [Generalization in Decision Modules](#generalization-in-decision-modules)
+  - [Generic Scene Representation](#generic-scene-representation)
   - [Scene decomposition methods](#scene-decomposition-methods)
-- [Considering interaction between traffic participants](#considering-interaction-between-traffic-participants)
-  - [Combining prediction and planning](#combining-prediction-and-planning)
-  - [Interaction-aware prediction](#interaction-aware-prediction)
-  - [Negotiation as a next step](#negotiation-as-a-next-step)
+- [Considering Interaction Between Traffic Participants](#considering-interaction-between-traffic-participants)
+  - [Combining Prediction and Planning](#combining-prediction-and-planning)
+  - [Interaction-Aware Prediction](#interaction-aware-prediction)
+  - [Negotiation as a Next Step](#negotiation-as-a-next-step)
 - [Scenarios and Datasets](#scenarios-and-datasets)
-  - [Needs for New Datasets](#needs-for-new-datasets)
-  - [Generating edge-case scenarios](#generating-edge-case-scenarios)
-  - [Common Critical Scenarios](#common-critical-scenarios)
   - [Defining Scenarios](#defining-scenarios)
+  - [Common Critical Scenarios](#common-critical-scenarios)
+  - [Generating edge-case scenarios](#generating-edge-case-scenarios)
+  - [Needs for New Datasets](#needs-for-new-datasets)
 - [Do not Forget Safety](#do-not-forget-safety)
   - [Safety Proof for AD](#safety-proof-for-ad)
   - [RSS](#rss)
-  - [Reachability analysis](#reachability-analysis)
+  - [Reachability Analysis](#reachability-analysis)
   - [Risk Assessment and Safety Checkers](#risk-assessment-and-safety-checkers)
 - [AD and Society](#ad-and-society)
   - [Social Benefit](#social-benefit)
@@ -212,10 +212,10 @@ The notion of **_tree_** is important for **online** solving. From one **initial
 
 This section is structured as followed:
 
-- Difference Learning vs Planning
-- Pure RL for decision making in AD is hard
-- Using RL for parameter tuning
-- Combining Learning and Planning
+- Difference learning vs planning.
+- Pure RL for decision making in AD is hard.
+- Using RL for parameter tuning.
+- Combining learning and planning.
 
 Interesting facts
 
@@ -259,7 +259,7 @@ Even if RL is hard to implement, it could offer a **reasoning longer horizon** a
 
 Among successful approaches, only few report **evaluations on real vehicles**. (Folkers, Rick, and Christof 2019) conducted test on a full-size research vehicle during and show the potential of their RL-based controller for autonomous exploration of a parking lot. It would have been nice to have demonstration form them or from the RL research teams as [WAYVE](https://wayve.ai/blog) during the track-demo day!
 
-### Using RL for parameter tuning
+### RL for Parameter Tuning
 
 Using RL for decision making is not the only option.
 
@@ -300,12 +300,12 @@ My main take-away is that, as for the reinforcement learning section, a **hybrid
 
 The following is structure as follows:
 
-- Benefits of the Learning + Non-Learning Combination
-- Learning-based Methods Now used in Prediction
-- Interpretability is not an Option
-- In Validation Process
+- Benefits of the combination "learning" with "non-learning" methods.
+- Learning-based methods for prediction.
+- Interpretability is not an option.
+- For validation process.
 
-### Benefits of the Learning + Non-Learning Combination
+### Benefits of the Learning with Non-Learning Combination
 
 This **need for such combination** is illustrated in (Schulz et al. 2019). A probabilistic mapping from context and route intention to action distribution is learnt with deep neural networks. The benchmark include a non-learnt approach. They show that for **short-term predictions** of up to around `2` seconds, all the **learning-based models outperform the rule-based action model**. But the rule-based model becomes **more accurate for predictions with very long horizons**, exceeding `15s`.
 
@@ -321,7 +321,7 @@ I have listed other example of successful combinations in the RL sections. The b
 |:--:|
 | *For each pedestrian, a probability of collision is computed from the time-to-brake TTB and the predicted position of the pedestrian. The difference between time to collision and time needed to stop is used to decide an emergency braking. Source: (Schratter et al. 2019).* |
 
-### Learning-based methods now used in prediction
+### Learning-based Methods for Prediction
 
 Other learning-based approaches to **replicate the behaviour of a non-learning-based methods** such as probabilistic or  kinematics-based approaches. And they show promising results, especially in **high complex interactions**.
 
@@ -334,7 +334,7 @@ For instance, (Joonatan and Folkesson 2019) use Conditional Variational Auto Enc
 (Y. Li et al. 2019) propose a review of the **learning-based approaches for pedestrian trajectory prediction**.
 In their conclusion, the authors suggest investigating the idea of a **unified framework that combines _Seq2Seq_ models** (learning-based) with **probabilistic graphical models**. Again, a fusion seems beneficial.
 
-### Interpretability is not an option
+### Interpretability is Not an Option
 
 In their prediction framework for driver’s manoeuvre intention, (Rehder et al. 2019) note that **Bayesian network** (BN) is a white box model, and that contrary to neural networks, model’s parameters are **human interpretable** and **manually adjustable** as needed.
 
@@ -356,7 +356,7 @@ After training a RL agent with PPO, (Folkers, Rick, and Christof 2019) compute a
 
 (Hu, Zhan, and Tomizuka 2019) demonstrate how to extract interpretability from their **prediction-based CVAE**. Conditional VAE is a **latent variable generative model** that can learn a factored, low-dimensional representation of an input scene. When plotting the **learnt latent space**, the two motion patterns (`pass`/`yield`) could be somehow distinguished. Moreover, they show that the generating trajectories can be explained by the **location of generative latent variable**. For instance, they fix one component of the latent space while decreasing the second one. This causes the second car to increase its speed and shifts from yielding the first car to passing it.
 
-### In Validation Process
+### For Validation Process
 
 While we do not want to have a **GAIL-based agent generating the policy** of the autonomous vehicle, it can serve for **simulation and validation purposes**. Especially for the policy of other traffic participants in simulation. It does **not need to be 100% safe** or interpretable. And it can even find bugs in the hand designed engineering system. The learning can be done **relatively fast** using naturalistic datasets to **model the most likely behaviour**. And it does not require much parameter tuning. Moreover, obtaining a mean behaviour does not need much data.
 
@@ -375,7 +375,7 @@ In this section, I would like to examine:
 - The case of occlusion.
 - Some techniques to reduce uncertainty in AD.
 
-### Sources of uncertainty
+### Sources of Uncertainty
 
 Christoph Stiller, one of the fathers of KITTI datasets, starting his keynotes by listing the sources of uncertainty**. He grouped them into four categories.
 
@@ -486,7 +486,7 @@ They show how it can be used to reduce uncertainty in the case of **occlusions**
 |:--:|
 | *From the behaviour of the other driver, the ego car can infer and become more confident about the probability of a pedestrian crossing. Source: (Sun et al. 2019).* |
 
-## Generalization in decision modules
+## Generalization in Decision Modules
 
 Most authors show the relevance of their approaches on one or few scenarios. Usually with a fix number of traffic participants and a specific/arbitrary road layout. I was wondering how these approaches can **generalize to a different road structure**, in diverse scenarios with **a various number of participants**.
 
@@ -531,7 +531,7 @@ Nevertheless, such decomposition methods **do not capture all the interactions**
 
 This brings us to the topic of **interaction-aware reasoning**.
 
-## Considering interaction between traffic participants
+## Considering Interaction Between Traffic Participants
 
 **Interaction-aware probabilistic decision making** is what most teams are targeting. The idea is to try to predict how ego actions could impact other traffic vehicles. **Predicting likely responses** is at the core of the human ability to navigate through a dense crowd, for instance in a train station. Such a skill is especially important for AD in **cooperative manoeuvres** such as *lane merging* and when considering *Vulnerable Road Users* (VRUs). Moreover, it allows for **negotiation between agents**.
 
@@ -541,7 +541,7 @@ Three points are considered in this section:
 - The consideration of interaction in prediction.
 - The upcoming task of negotiation.
 
-### Combining prediction and planning
+### Combining Prediction and Planning
 
 Most AD software architectures **separate the prediction module and the planning module**. First, a trajectory of the surrounding vehicles is predicted. These **trajectories are then considered as obstacles** for the ego vehicle in the planning stage. But this separation results in a **reactive behaviour** which **does not consider interaction** during the trajectory planning.
 
@@ -551,7 +551,7 @@ The POMDP formulation can incorporate prediction (forward roll-outs based on the
 |:--:|
 | *Example of architecture where both prediction and planning are done in a single module, using a POMDP formulation. Source: (Schörner et al. 2019).* |
 
-### Interaction-aware prediction
+### Interaction-Aware Prediction
 
 Prediction approaches can be divided into three groups.
 
@@ -584,7 +584,7 @@ This idea of **first identifying interation** and **then predict trajectories** 
 
 I was not familiar with GAIL before and was more interested by **IRL-based methods** to learn from expert demonstration. But while IRL is trying to infer the underlying MDP **reward function**, it does not give the policy directly. The **optimal policy has to be derived afterwards**. Moreover, IRL-based methods require to model the problem as an MDP. Which is not easy. From this point of view, GAIL offers a valuable advantage.
 
-### Negotiation as a next step
+### Negotiation as a Next Step
 
 > Merging is about creating space versus waiting for full space.
 
@@ -689,9 +689,9 @@ Participants were **excited about this new dataset**. As Mykel Kochenderfer note
 
 This topic was new to me. I have heard of:
 
-- Safety Validation for AD
+- Safety validation for AD
 - RSS
-- Model Checkers
+- Model checkers
 - Reachability sets
 
 ### Safety Proof for AD
@@ -772,7 +772,7 @@ Finally, I have retained two main announcements from RSS:
 |:--:|
 | *First, the perceived information needs to be extracted according to the RSS world model. The RSS module provides then actuator command restrictions as output to enforce safe behaviour. The checker can be placed at several location: within the behaviour planner, around the planning module or outside the AD (CARLA example).* |
 
-### Reachability analysis
+### Reachability Analysis
 
 During the three days of workshop and conference, I heard a lot about **reachability analysis** and **reachability sets**. These concepts were new to me.
 
@@ -860,8 +860,8 @@ Everyone was having fun in the demo of IRSTEA - Institut Pascal. Originally a pr
 
 In this section, I would like to address two topics:
 
-- Social Acceptance of AD applications
-- Social Benefit brought by AD applications
+- Social acceptance of AD applications
+- Social benefit brought by AD applications
 
 ### Social Acceptance
 
