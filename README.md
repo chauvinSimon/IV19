@@ -6,9 +6,9 @@
 |:--:|
 | *2019 Intelligent Vehicle Symposium* |
 
-Last week, experts from the autonomous driving (AD) world came together for the 2019 IEEE Intelligent Vehicle Symposium ([IV19](https://iv2019.org/)) in Paris to discuss about research and applications for autonomous driving.
+Early June 2019, experts from the autonomous driving (AD) world came together for the 2019 IEEE Intelligent Vehicle Symposium ([IV19](https://iv2019.org/)) in Paris to discuss about research and applications for autonomous driving.
 
-This **30th edition** included one full day of **workshops and tutorials**, two days of **oral presentations**, **poster sessions** and **keynotes** as well as one whole day of **on-track demonstrations**. Not to mention the several **social events** that were ideal for deeper discussions and intense debates.
+This **30th edition** included one full day of **workshops and tutorials**, two days of **oral presentations**, **poster sessions** and **keynotes** as well as one whole day of **on-track demonstrations**. Not to mention the multiple **social events** that were ideal for deeper discussions and intense debates.
 
 Some interesting figures:
 
@@ -25,7 +25,7 @@ In this post, I would like to **share some personal highlights** about the lates
 Disclaimers:
 
 - These notes are **personal highlights** and do **not aim at being an exhausted review** of the IV19 publications.
-- I mainly focus on the topic of **decision making for AD** (as opposed to perceptions, localisation or control for instance).
+- I mainly focus on the topic of **decision making for AD** (as opposed to _perception_, _localisation_ or _control_ for instance).
 - Many subjects I am discussing are new to me. I really hope I did not misinterpret any concept when referencing to papers. Please notify me if any statement or interpretation is incorrect!
 
 ```
@@ -50,7 +50,7 @@ My 10 takeaways:
   - [POMDP Solvers](#pomdp-solvers)
 - [Reinforcement Learning](#reinforcement-learning)
   - [Difference Learning vs Planning](#difference-learning-vs-planning)
-  - [Pure RL for decision making in AD is hard](#pure-rl-for-decision-making-in-ad-is-hard)
+  - [Pure RL for decision making in AD is Hard](#pure-rl-for-decision-making-in-ad-is-hard)
   - [RL for Parameter Tuning](#using-rl-for-parameter-tuning)
   - [Combining Learning and Planning](#combining-learning-and-planning)
 - [Learning-based versus Non-Learning-based Approaches](#learning-based-versus-non-Learning-based-approaches)
@@ -86,7 +86,7 @@ My 10 takeaways:
 - [Demonstrations](#demonstrations)
   - [Test Day](#test-day)
   - [Miscellaneous Comments](#miscellaneous-comments)
-  - [Discussions With Some Sponsors](#discussions-with-some-sponsors)
+  - [Discussions with Some Sponsors](#discussions-with-some-sponsors)
 - [Conclusion](#conclusion)
 - [A Last Word](#a-last-word)
 - [References](#references)
@@ -95,7 +95,7 @@ My 10 takeaways:
 
 **_“POMDP”_** stands for _Partially Observable Markov Decision Process_. It is a **model** that can be used to formulate the **problem of decision making under uncertainty**. It is therefore very interesting for **AD applications**.
 
-In this first section, I review the different **POMDP implementations** used at IV19, mention their **benefits for AD applications of such a formulation**, and compare the different **solving techniques**. The section is structured as follows:
+In this first section, I review the different **POMDP implementations** used at IV19, mention their **benefits for AD applications**, and compare the different **solving techniques**. The section is structured as follows:
 
 - Benefits of using POMDP for decision making in AD.
 - Comparison of POMDP formulations.
@@ -106,7 +106,7 @@ Interesting facts
 - (Schörner et al. 2019) received the **Best Paper Award** for **“Predictive Trajectory Planning in Situations with Hidden Road Users Using Partially Observable Markov Decision Processes”**.
 - The term _POMDP_ appeared in `4%` of the released papers.
 - Some were using the term _Mixed Observable MDP_ instead of _Partially Observable MDP_ to indicate that a portion of the underlying state is observable (e.g. the ego vehicle information).
-- Many research labs and companies were showing interest in POMDPs. For instance, all participants received in their symposium bag a position offer from Daimler (IV19 sponsor), looking for an engineer for decision making with experience with POMDP.
+- Many research labs and companies were showing interest in POMDPs. For instance, all participants received in their symposium bag a position offer from _Daimler_ (IV19 sponsor), looking for an engineer for decision making with experience with POMDP.
 
 The first day I could take part to the workshop _“Prediction and Decision Making for Socially Interactive Autonomous Driving_, shortened [**SIPD**](https://sites.google.com/berkeley.edu/iv19-interaction).
 It was fantastic to have **Mykel Kochenderfer**, from the Department of Aeronautics and Astronautics at Stanford University, since his lab is regarded as one top reference in the topic of **decision making under uncertainty**. He explained how he is trying to **transfer to the automotive domain** what he has learnt from his **works for the aviation domain** such as traffic collision avoidance systems. **Looking for solutions in other industries** (e.g. _aviation_ and _pharmaceutic_ sectors) was a recurring idea during the four days. Especially for **safety validation** and for **risk assessment**.
@@ -242,7 +242,7 @@ The AD decision or AD control can be **formulated as a Markov Decision Process**
 
 I think it is worth to have this distinction in mind when analysing the different presented algorithms.
 
-### Pure RL for decision making in AD is hard
+### Pure RL for decision making in AD is Hard
 
 Although there has been some successful decision making approaches using RL, **model-free techniques**, especially when trained directly on images, are **complex**.
 
@@ -726,7 +726,7 @@ Intel, as the Platinum sponsor, could advertise the mathematical model for AV sa
 
 While RSS starts to become popular among the AD community, it seems it has already [inspired Nvidia](https://newsroom.intel.com/editorials/innovation-requires-originality/#gs.kiu5nl). 😉
 
-| [![IMAGE ALT TEXT](http://img.youtube.com/vi/EceAB6TUYzo/0.jpg)](media/pics/rss_absolute_safety_impossible.PNG "YouTube video: Introduction to RSS.")  |
+| [![IMAGE ALT TEXT](http://img.youtube.com/vi/EceAB6TUYzo/0.jpg)](http://www.youtube.com/watch?v=EceAB6TUYzo "YouTube video: Introduction to RSS.")  |
 |:--:|
 | *YouTube video: Introduction to RSS.* |
 
@@ -979,11 +979,7 @@ The European project [AutoMate](http://www.automate-project.eu/) project demonst
 
 I found a little bit impressive to drive at `70 km/h` on a countryside-like road with the AD mode.
 
-| ![AD system asking for human collaboration when "approaching" a roundabout. Source: author provided.](media/gif/automate_take_over.gif "AD system asking for human collaboration when "approaching" a roundabout. Source: author provided.")  |
-|:--:|
-| *AD system asking for human collaboration when "approaching" a roundabout. Source: author provided.* |
-
-This demonstration raises questions about the cooperation between human driver and the autopilot. Here, the driver cannot be described as “distracted”. He was paying much attention and could therefore quickly take over.
+This demonstration raises questions about the **cooperation between human driver and the autopilot**. Here, the driver cannot be described as “distracted”. He was paying much attention and could therefore quickly take over.
 
 In addition, only one request was submitted during the test. I can imagine it could be **annoying to be repetitively asked** for collaboration. That reminded me an oral session, where a reference to [The Boy Who Cried Wolf fable](https://en.wikipedia.org/wiki/The_Boy_Who_Cried_Wolf) was made to highlight the **risk of false alarms**: too many unnecessary warnings and calls for disengagement **might discourage driver vigilance**.
 
@@ -993,7 +989,11 @@ Another thing I noticed is the **central display**. It is supposed to **inform t
 
 This also raises the question of the **driving licence**. In the aviation domain, pilots are trained to handle such transitions and to collaborate. Introducing **level-3 vehicles** (sometimes called *“conditionally-automated”*) in hands of **untrained people** is questionable. In the debate over **supervised vs unsupervised driving modes**, multiple OEMs have already announced they will **skip level-3**, arguing that **this handover of control is unsafe**.
 
-A research team from UTC presented a **cooperative communication** between two vehicles for roundabout crossing. When arriving at the entrance, our vehicle **agreed** with the vehicle driving on roundabout **who should go first**. This V2V solution removes the need for the **challenging inference of intention**. Given **all participants are connected**.
+| ![AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.](media/gif/tu_delft.gif "AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.")  |
+|:--:|
+| *AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.* |
+
+A research team from UTC presented a **cooperative communication** between two vehicles for roundabout crossing. When arriving at the entrance, our vehicle **agreed** with the vehicle driving on roundabout **who should go first**. This V2V solution removes the need for the **challenging inference of intention**. But it requires **all participants to be connected**.
 
 | ![V2V communication for roundabout crossing. Source: author provided.](media/gif/utc_v2v_roundabout.gif "V2V communication for roundabout crossing. Source: author provided.")  |
 |:--:|
@@ -1013,17 +1013,17 @@ PSA did not show any prototype. Instead I could test a pre-series car with ADAS 
 
 ### Miscellaneous Comments
 
-| ![Most teams were using ROS (ROS1 or ROS2) and the related visualization tool [RViz](http://wiki.ros.org/rviz). Convenient to display multiple windows. Source: author provided.](media/pics/kit_rviz.JPG "Most teams were using ROS (ROS1 or ROS2) and the related visualization tool [RViz](http://wiki.ros.org/rviz). Convenient to display multiple windows. Source: author provided.")  |
+| ![Most teams were using **ROS** (`ROS1` or `ROS2`) and the related visualization tool [RViz](http://wiki.ros.org/rviz). Convenient to display multiple windows. Source: author provided.](media/pics/kit_rviz.JPG "Most teams were using **ROS** (`ROS1` or `ROS2`) and the related visualization tool [RViz](http://wiki.ros.org/rviz). Convenient to display multiple windows. Source: author provided.")  |
 |:--:|
-| *Most teams were using ROS (ROS1 or ROS2) and the related visualization tool [RViz](http://wiki.ros.org/rviz). Convenient to display multiple windows. Source: author provided.* |
+| *Most teams were using **ROS** (`ROS1` or `ROS2`) and the related visualization tool [RViz](http://wiki.ros.org/rviz). Convenient to display multiple windows. Source: author provided.* |
 
 | ![Most teams were using 3D-printed black casings to prevent reflexion from the dashboard in their cameras. Source: author provided.](media/pics/anti_reflexion_casing.JPG "Most teams were using 3D-printed black casings to prevent reflexion from the dashboard in their cameras. Source: author provided.")  |
 |:--:|
 | *Most teams were using 3D-printed black casings to prevent reflexion from the dashboard in their cameras. Source: author provided.* |
 
-Another comment, about the type of the presented AD vehicles. Most were car-like. And during the four days of workshop, conference and demonstration, I was surprise not to see more **AD applications for trucks**. Due to its **market size** and its **market value**, and considering he **might present lighter technical challenges** than for AD cars, self-driving trucks are sometimes [predicted to be first to market](https://medium.com/redpoint-ventures/why-self-driving-trucks-will-be-first-to-market-and-why-we-invested-in-ike-6a8f8114c8ec). Nevertheless, **truck applications were almost absent from IV19**. If they were used multiple times as slow dynamic obstacles to avoid, the term “truck” was present in only seven abstracts.
+I would like to make a last comment, concerning the type of the presented AD vehicles. Most were car-like. And during the four days of workshop, conference and demonstration, I was surprise not to see more **AD applications for trucks**. Due to its **market size** and its **market value**, and considering it **might present lighter technical challenges** than for AD cars, self-driving trucks are sometimes [predicted to be first to market](https://medium.com/redpoint-ventures/why-self-driving-trucks-will-be-first-to-market-and-why-we-invested-in-ike-6a8f8114c8ec). Nevertheless, **truck applications were almost absent from IV19**. While they were used multiple times as slow dynamic obstacles to avoid, the term “truck” was present in only seven abstracts.
 
-### Discussions With Some Sponsors
+### Discussions with Some Sponsors
 
 Several sponsors were presented solution during the conference. I talked to two of them. Sorry, I do not have anything to show here.
 
@@ -1031,15 +1031,15 @@ Several sponsors were presented solution during the conference. I talked to two 
 
 IVS allows to centralize, store and share **recorded sensor data**. Descriptions of the driving situations are added. It is then possible to **search for a specific traffic situation**. Convenient for **regression tests** and for **debugging**.
 
-I was showed how to **quickly retrieve all recorded highway scenarios** where the ego-car was driving on the **left-lane**, with a speed **higher than 110km/h**, while **taking over a truck**. Obviously the quality of this **tag-based search relies on annotations**. They can be done online or offline.
+I was showed how to **quickly retrieve all recorded highway scenarios** where the ego-car was driving on the **left-lane**, with a speed **higher than `110km/h`**, while **taking over a truck**. Obviously, the quality of this **tag-based search relies on annotations**. They can be done online or offline.
 
 EasyMile and safety validation.
 
-I really enjoyed discussing with some of the engineers from EasyMile! They stressed the importance of the **development process** for **safety validation**. They took the example of the aviation domain where some **sensors must be made redundant** and must even originate from two different manufacturers. This is currently not the case for AD where, despite multi-modality in perception, there is usually one single camera per direction. What is more important to the safety validation authorities is **how the full system has been developed**. In particular the **“safety checker”** that **runs in parallel to the driving functions** must have been **developed independently** of these driving functions, by an **independent team**.
+I really enjoyed discussing with some of the engineers from EasyMile! They stressed the importance of the **development process** for **safety validation**. They took the example of the aviation domain where some **sensors must be made redundant** and must even originate from two different manufacturers. This is currently not the case for AD where, despite multi-modality in perception, there is usually one single camera per direction. What is more important to the validation authorities is **how the full system has been developed**. In particular the **“safety checker”** that **runs in parallel to the driving functions** must have been **developed independently** of these driving functions, by an **independent team**.
 
 ## Conclusion
 
-Tom Vöge ended his keynote with a **gentle joke to EasyMile**. He mentioned the EU-funded project [parkshut](https://staff.washington.edu/jbs/itrans/parkshut.htm) to was developing an AD shuttle service. The park shuttle was released to the public in April 1999. He said:
+Tom Vöge ended his keynote with a **gentle joke to EasyMile**. He mentioned the EU-funded project [parkshut](https://staff.washington.edu/jbs/itrans/parkshut.htm) that developed an AD shuttle service. The park shuttle was released to the public in April 1999. He said:
 
 > “Twenty years later we are still at the same point with AD: demonstration”.
 
@@ -1047,7 +1047,7 @@ Tom Vöge ended his keynote with a **gentle joke to EasyMile**. He mentioned the
 |:--:|
 | *ParkShuttle (1999) and EasyMile (2019). Sources: [top](https://staff.washington.edu/jbs/itrans/parkshut.htm) - [bottom](https://www.facebook.com/EasyMile/).* |
 
-This is a little bit unfair for EasyMile since they are one of the very few to already operate AD vehicles with public. But this punchy conclusion reminded everyone that **we still have a long way to go before AD exit, and become beneficial for the society**.
+This is a little bit unfair for EasyMile since they are one of the very few to already operate AD vehicles with public. But this punchy conclusion reminded everyone that **we still have a long way to go before AD gets deployed, democratised and become beneficial for the society**.
 
 ### A Last Word
 
@@ -1055,7 +1055,7 @@ IV19 was my first scientific symposium. I could meet leading-edge researchers an
 
 Again, many thanks at [ESR Labs AG](https://www.esrlabs.com) for this great opportunity. I am now looking forward to implementing the learnt lessons to [some of our projects](https://www.esrlabs.com/works/autonomous).
 
-### Save The Date - an some dollars :bowtie:
+### Save The Date - and some dollars :bowtie:
 
 [IV20](https://2020.ieee-iv.org/) will take place in Las Vegas, June 23-26, while Japan will host IV21, with probably a lot of amazing demos to show after the 2020 Olympics.
 
