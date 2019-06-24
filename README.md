@@ -1,22 +1,6 @@
 # My 10 takeaways from the 2019 Intelligent Vehicle Symposium
 
-!!!! WORK IN PROGRESS !!!!
-
 *If some pictures are not loaded, try to refresh the page.*
-
-```bash
-TL;DR:
-- Look how other industries (e.g. aviation) deal with risk assessment and decision making under uncertainty.
-- Stop separating prediction and planning and use POMDP formulations.
-- Combine learning and planning (e.g. MCTS + RL).
-- Interaction-aware planning.
-- Bring interpretability into learning-based methods.
-# - Generalize with decomposition or image-like states.
-# - Think distribution, instead of mean expectation or point-estimate.
-- Abandon the *Vision Zero* buzzword.
-- AD could be a disaster if perpetuating inequalities and ignoring shared mobility.
-- Some demos were impressive. But far from series production. # -> Back to work.
-```
 
 | ![2019 Intelligent Vehicle Symposium](media/pics/iv19.jpg "2019 Intelligent Vehicle Symposium")  |
 |:--:|
@@ -32,7 +16,7 @@ Some interesting figures:
 - `525` paper submissions.
 - `62%` acceptance rate.
 - More than `1100` reviewers.
-- Authors coming from `37` countries, with almost **one third from Germany**, `16%` China, `14%` USA, `7%` France, `5%` Japan. *I sometime felt more in Germany than in France!*
+- Authors coming from `37` countries, with almost **one third from Germany**, `16%` China, `14%` USA, `7%` France, `5%` Japan. *I sometimes felt more in Germany than in France!*
 
 From the [List of Events for Autonomous Driving Engineers and Researchers](https://github.com/esrlabs/Conferences-for-Autonomous-Driving), IV was identified as a top priority for our [Machine Learning Team](https://www.esrlabs.com/works/autonomous/). I would like to **thank [ESR Labs AG](https://www.esrlabs.com)** for this opportunity to exchange, during four days, with other engineers, researchers, practitioners, and students, from industry, universities and government agencies about the latest trends, insights and challenges related to the fast-moving field of AD.
 
@@ -43,6 +27,20 @@ Disclaimers:
 - These notes are **personal highlights** and do **not aim at being an exhausted review** of the IV19 publications.
 - I mainly focus on the topic of **decision making for AD** (as opposed to perceptions, localisation or control for instance).
 - Many subjects I am discussing are new to me. I really hope I did not misinterpret any concept when referencing to papers. Please notify me if any statement or interpretation is incorrect!
+
+```
+My 10 takeaways:
+- Use POMDP formulations.
+- Combine learning and planning (e.g. MCTS + RL).
+- Think distribution instead of mean expectation or point-estimate.
+- Stop separating prediction and planning.
+- Learn more about CVAE and GAIL.
+- Consider human participants not just as dynamic obstacles, but as distributed sensors.
+- Abandon the Vision Zero buzzword.
+- Look how other industries (e.g. aviation) deal with risk assessment and decision making under uncertainty.
+- Realise that AD could be a disaster if shared mobility is ignored and inequalities are perpetuated.
+- Test approaches on real vehicles.
+```
 
 ## Structure
 
@@ -56,7 +54,7 @@ Disclaimers:
   - [RL for Parameter Tuning](#using-rl-for-parameter-tuning)
   - [Combining Learning and Planning](#combining-learning-and-planning)
 - [Learning-based versus Non-Learning-based Approaches](#learning-based-versus-non-Learning-based-approaches)
-  - [Benefits of the Learning with Non-Learning Combination](#benefits-of-the-learning-+-non-learning-combination)
+  - [Benefit of Combining Learning with Non-Learning Approaches](#benefit-of-combining-learning-with-non-learning-approaches)
   - [Learning-based Methods for Prediction](#learning-based-methods-now-used-in-prediction)
   - [Interpretability is not an Option](#interpretability-is-not-an-option)
   - [For Validation Process](#in-validation-process)
@@ -95,35 +93,35 @@ Disclaimers:
 
 ## We are living in a POMDP
 
-**_“POMDP”_** stands for _Partially Observable Markov Decision Process_. It is a *model that can be used to formulate the **problem of decision making under uncertainty**. It is therefore very interesting for **AD applications**.
+**_“POMDP”_** stands for _Partially Observable Markov Decision Process_. It is a **model** that can be used to formulate the **problem of decision making under uncertainty**. It is therefore very interesting for **AD applications**.
 
-In this first section, I review the different **POMDP implementations** used for IV19, mentioning the **benefits for AD applications of such a formulation** , and compare the different **solving techniques**. The section is structured as follows:
+In this first section, I review the different **POMDP implementations** used at IV19, mention their **benefits for AD applications of such a formulation**, and compare the different **solving techniques**. The section is structured as follows:
 
 - Benefits of using POMDP for decision making in AD.
 - Comparison of POMDP formulations.
 - Comparison of POMDP solving techniques.
 
-Additional facts
+Interesting facts
 
 - (Schörner et al. 2019) received the **Best Paper Award** for **“Predictive Trajectory Planning in Situations with Hidden Road Users Using Partially Observable Markov Decision Processes”**.
 - The term _POMDP_ appeared in `4%` of the released papers.
 - Some were using the term _Mixed Observable MDP_ instead of _Partially Observable MDP_ to indicate that a portion of the underlying state is observable (e.g. the ego vehicle information).
-- Many research labs and companies were showing interest in POMDPs. For instance, all participants received in the symposium bag a position offer from Daimler (IV19 sponsor), looking for a position about decision making with experience with POMDP.
+- Many research labs and companies were showing interest in POMDPs. For instance, all participants received in their symposium bag a position offer from Daimler (IV19 sponsor), looking for an engineer for decision making with experience with POMDP.
 
 The first day I could take part to the workshop _“Prediction and Decision Making for Socially Interactive Autonomous Driving_, shortened [**SIPD**](https://sites.google.com/berkeley.edu/iv19-interaction).
-It was fantastic to have **Mykel Kochenderfer**, from the Department of Aeronautics and Astronautics at Stanford University, since his lab is regarded as one top reference in the topic of **decision making under uncertainty**. He explained how he is trying to **transfer to the automotive domain** what he has learnt from his **works for the aviation domain** such as traffic collision avoidance system. **Looking for solutions in other industries** (e.g. _aviation_ and _pharmaceutic_ sectors) was a recurring idea during the four days. Especially for **safety validation** and for **risk assessment**.
+It was fantastic to have **Mykel Kochenderfer**, from the Department of Aeronautics and Astronautics at Stanford University, since his lab is regarded as one top reference in the topic of **decision making under uncertainty**. He explained how he is trying to **transfer to the automotive domain** what he has learnt from his **works for the aviation domain** such as traffic collision avoidance systems. **Looking for solutions in other industries** (e.g. _aviation_ and _pharmaceutic_ sectors) was a recurring idea during the four days. Especially for **safety validation** and for **risk assessment**.
 
 ### POMDP Benefits
 
 The POMDP formulation offers several advantages.
 
 - As an MDP, it is meant for **sequential decision process**, seeking optimal policies for **long-term objectives**, contrary to reactive approaches. It is for instance benefitial for highway exit cases where a long planning horizon is required.
-- As a **belief-state planner** with **probabilistic transition and measurement models**, it can deal with several sources of uncertainty to make **uncertainty-aware decisions**:
-  - uncertainty in sensor measurements (perception)
-  - uncertainty in car controls
-  - partial observability and stochasticity of other traffic participants
-  - limited information and understanding about the environment
-- As a **generative model**, it can use its belief on the intention of other participants to **make prediction**. Prediction and planning can hence be done in the same module, **avoiding the loss of information**.
+- As a **belief-state planner** with **probabilistic transition and measurement models**, it can deal with several sources of uncertainty to produce **uncertainty-aware decisions**:
+  - Uncertainty in sensor measurements (perception).
+  - Uncertainty in car controls.
+  - Partial observability and stochasticity of other traffic participants.
+  - Limited information and understanding about the environment.
+- As a **generative model**, it can use its belief on the intention of other participants to **make prediction**. Prediction and planning can hence be done in the same module, **avoiding any loss of information**.
 
 ### POMDP Formulation
 
@@ -136,33 +134,33 @@ A POMDP is defined by six elements (plus a discount factor and a horizon):
 - A **measurement** model,
 - And a **transition** model.
 
-Authors usually reserve one section per element, together with a part about **_belief tracking_**.
+Authors usually reserve one section per element in their papers, together with a part dedicated to **_belief tracking_**.
 
-For the Markov property to be valid, the **state** should contain all information necessary to predict future states. But choosing the right level of representation is critical, as discussed in the subsequent section on [generalization](#generalization-in-decision-modules). **Static background knowledge** such as road network topology, road geometry, static objects like buildings or parking vehicles **should not be included in the state space** as it might be accessed at any time.
+Let's start with the **state**. For the Markov property to be valid, the **state** should contain all information necessary to predict future states. But choosing the right level of representation is critical, as discussed in the subsequent section on [generalization](#generalization-in-decision-modules). **Static background knowledge** such as road network topology, road geometry or static objects like buildings **should not be included in the state space** as it might be accessed at any time.
 
-In a **partially observable MDP** (POMDP), the agent **does not have a full access to the state**. The **probabilistic distribution over the current state** is available but not the state itself. It makes use of the observation to **maintain** (or _track_) some belief over the state. This belief will be used to select an action.
+In a **partially observable MDP** (POMDP), the agent **does not have a full access to the state**. A **probabilistic distribution over the current state** is available but not the state itself. It makes use of the observation to **maintain** (or _track_) some belief over the state. This belief will be used for the action selection.
 
-Most belief trackers use some **particle filters as a belief update algorithm**. (Bouton et al. 2019b) shows that an **ensemble of RNN** can **emulate the role of a particle filter**. Several RNNs are trained on independent data sets and during inference, each one outputs a belief. As I understood, these believes are treated uniformly.
+Most belief trackers use some **particle filters as a belief update algorithm**. (Bouton et al. 2019) show that an **ensemble of RNN** can **emulate the role of a particle filter**. Several RNNs are trained on independent data sets and during inference, each one outputs a belief. As I understood, these believes are treated uniformly.
 
-The **observation** is usually a manually defined **vector of features** and sometimes an **image** such as a top view scene. It can also be a concatenation of both, as in (Folkers, Rick, and Christof 2019) or in (Pusse and Klusch 2019) where the last received reward, the last executed action and the current car velocity come to enrich the car intention RGB image.
+The **observation** is usually a manually defined **vector of features** and sometimes an **image** such as a top view scene. It can also be a concatenation of both, as in (Folkers, Rick, and Christof 2019) or in (Pusse and Klusch 2019) where the _last received reward_, the _last executed action_ and the _current car velocity_ come to enrich an image representing the car intention.
 
-| ![The input of the RL network is composed of a ternary perception map and a target state. Source: (Folkers, Rick, and Christof 2019).](media/pics/folkers_hybrid_input.PNG "The input of the RL network is composed of a ternary perception map and a target state. Source: (Folkers, Rick, and Christof 2019).")  |
+| ![Example of combining a image and some ego information for the observation. Source: (Folkers, Rick, and Christof 2019).](media/pics/folkers_hybrid_input.PNG "Example of combining a image and some ego information for the observation. Source: (Folkers, Rick, and Christof 2019).")  |
 |:--:|
-| *The input of the RL network is composed of a ternary perception map and a target state. Source: (Folkers, Rick, and Christof 2019).* |
+| *Example of combining a image and some ego information for the observation. Source: (Folkers, Rick, and Christof 2019).* |
 
 The **observation function** usually models the **perception noise**. For instance, (Bouton et al. 2019) uses a Gaussian distribution around the position and velocity. They also **add false positive** and **false negative detections** of cars and pedestrian. This should increase the **robustness** of the approach.
 
-The **hidden part of the state** (sometimes called **_latent variable_**) usually describes the **intention** of other participants. It can be one **manoeuvre classification** (e.g. _the other vehicle is completing the "go straight" manoeuvre_), a goal point or **target destination** (e.g. _the other vehicle wants to reach the third exit of the round-about_), or an **intended route** among a set of predefined routes as in (Joonatan and Folkesson 2019). Sometimes, other drivers are assumed to follow **driver parametric models** such as Intelligent Driver Model (**IDM**). In this case, the parameters are hidden, and their values are tracked within the belief.
+The **hidden part of the state** (sometimes called **_latent variable_**) usually describes the **intention** of other participants. It can be one **manoeuvre classification** (e.g. _the other vehicle is completing the "go straight" manoeuvre_), a goal point or **target destination** (e.g. _the other vehicle wants to reach the third exit of the round-about_), or an **intended route** among a set of predefined routes as in (Joonatan and Folkesson 2019). Sometimes, other drivers are assumed to follow **driver parametric models** such as the Intelligent Driver Model (**IDM**). In this case, the parameters are hidden, and their values are tracked within the belief.
 
-Most approaches apply the **path-velocity decomposition**. This means the **path** (list of waypoints) is planned separately from the **velocity profile**. In other words, one decides for the **steering commands** (_lateral control_), while the other takes care of the **acceleration** (_longitudinal control_). This reduces the problem size. Most IV19 contributions using POMDPs model the sequential decision problem about the **longitudinal control** as a POMDP, while some **pre-defined paths** can be extracted from the map. For instance (Bouton et al. 2019b) uses the discrete set {`−4m/s2`, `−2m/s2`, `0m/s2`, `2m/s2`}. While most **state spaces** are **continuous** or **hybrid** (some features are continuous while other are discrete), working with a **continuous action space** is still hard and not so common. The [POMCPOW](https://github.com/JuliaPOMDP/POMCPOW.jl) algorithm from (Sunberg and Kochenderfer 2017) uses progressive widening and weighted particle filtering to approximately solve POMDPs with continuous state, action, and observation spaces. It has been mentioned several times during the SIPD workshop and is worth being investigated.
+Most approaches apply the **path-velocity decomposition**. This means the **path** (list of waypoints) is planned separately from the **velocity profile**. In other words, one decides for the **steering commands** (_lateral control_), while the other takes care of the **acceleration** (_longitudinal control_). This reduces the problem size. In IV19 contributions, POMDPs were mainly used for the **longitudinal control**, while some **pre-defined paths** can be extracted from the map. For instance (Bouton et al. 2019) uses the discrete set {`−4m/s2`, `−2m/s2`, `0m/s2`, `2m/s2`}. While most **state spaces** are **continuous** or **hybrid** (some features are continuous while other are discrete), working with a **continuous action space** is still hard and not very common. The [POMCPOW](https://github.com/JuliaPOMDP/POMCPOW.jl) algorithm from (Sunberg and Kochenderfer 2017) uses progressive widening and weighted particle filtering to approximately solve POMDPs with continuous state, action, and observation spaces. It was mentioned several times during the SIPD workshop and is probably worth being investigated.
 
-I was surprised to see most POMDPs working with **low level actions** (acceleration mainly), as opposed to some **semantic manoeuvres**. (Schörner et al. 2019) suggests reasoning about higher level behaviours. For instance, _lane changes_, _overtaking_ or _following the vehicle in front_. An underlying **motion planning unit** can then implement the selected manoeuvre into low level commands. Most participants to the workshop argue for such a **hierarchy between the decision modules**, as the 3M concept of (Chauvin 2018), and the use of **higher abstraction actions** in the POMDP. One challenge is the **communication and especially the feedback loop** between the manoeuvre selection module and the motion planning module (MPC-based for instance).
+I was surprised to see most POMDPs working with **low level actions** (acceleration mainly), as opposed to some **semantic manoeuvres**. (Schörner et al. 2019) suggests reasoning about higher level behaviours. For instance, _lane changes_, _overtaking_ or _following the vehicle in front_. An underlying **motion planning unit** can then implement the selected manoeuvre into low level commands. Most participants to the workshop advocated for such a **hierarchy between the decision modules**, as the 3M concept of (Chauvin 2018), and the use of **higher abstraction actions** in the POMDP. One challenge is the **communication and especially the feedback loop** between the manoeuvre selection module and the motion planning module.
 
-(Folkers, Rick, and Christof 2019) note that manoeuvres _drive_ and _stop_ require a rather different behaviour of the agent. Hence two policies (the _DRIVER_ and the _STOPPER_) are separated, using **two different reward functions**. It requires a **switch**, such as the **state machine** of (Kapania et al. 2019).
+(Folkers, Rick, and Christof 2019) note that manoeuvres _drive_ and _stop_ require two different behaviours of the agent. Hence two policies (the _DRIVER_ and the _STOPPER_) are separated, using **two different reward functions**. It requires a **switch**, such as the **state machine** of (Kapania et al. 2019).
 
-**Reward functions** are usually combination of several terms. It shoud encourage the agent to _reach the goal_, _avoid collisions_, _avoid deviation from a predefined path_ or _from a desired speed_, consider _passenger comfort_, consider _social behaviour_ ... The question is then **how to weight the different contributions**. This can be very challenging, as acknowledged by (Schratter et al. 2019a) where a tuning of the reward function is performed.
+**Reward functions** are usually some combination of several terms. It shoud encourage the agent to _reach the goal_, _avoid collisions_, _avoid deviation from a predefined path_ or _from a desired speed_, consider _passenger comfort_, consider _social behaviour_ ... The question is then **how to weight the different contributions**. This can be very challenging, as acknowledged by (Schratter et al. 2019) where a tuning of the reward parameters is performed.
 
-One could used **inverse reinforcement learning** (IRL) to determine appropriate values for the reward function. (Sun et al. 2019) learns the cost function of an MPC is via IRL, but I did not see any IRL used for POMDP. For sure this will be done in the future.
+One could used **inverse reinforcement learning** (IRL) to determine appropriate values for the reward function. (Sun et al. 2019) learn the cost function of an MPC via IRL, but I did not see any IRL applications for POMDPs. For sure it will be done in future works.
 
 (Folkers, Rick, and Christof 2019) organizes the training into two phases and **varies the weighting of each reward contributions** between both. When the policy learns to get high rewards in the first phase, additional behaviours such as an appropriate speed and small steering angles are considered.
 
@@ -180,7 +178,7 @@ The transition model usually holds **one part for the ego vehicles** whose state
 
 Another possibility is to infer the action of other participant, by assuming they follow the Intelligent Driver Model (IDM). IDM is a _crash-free microscopic car-following model_ that is widely applied for driver intention estimation and for **modelling how others react to specific plans** of an AD vehicle. It estimates **longitudinal dynamic** speed controls.
 
-Besides point-mass models and probabilitic approaches, (Schratter et al. 2019a) uses a simple **reachability** model. Depending on the current pedestrian state, future positions for the pedestrian are computed based on a **set of possible acceleration values**.
+Besides point-mass models and probabilitic approaches, (Schratter et al. 2019) uses a simple **reachability** model. Depending on the current pedestrian state, future positions for the pedestrian are computed based on a **set of possible acceleration values**.
 
 ### POMDP Solvers
 
@@ -255,7 +253,7 @@ Earlier this year, (J. Chen, Yuan, and Tomizuka 2019) tested three state-of-the-
 | *Results of model-free RL for a specific task: roundabout handling. Source: (J. Chen, Yuan, and Tomizuka 2019).* |
 
 Even if RL is hard to implement, it could offer a **reasoning longer horizon** and the **ability to solve task that are too complex** for classical rule-based methods.
-(Bouton et al. 2019a) finds that using a **pure RL technique does not enable the agent to act more safely** than when using simple **rule-based methods**. But when the **scenario becomes more complex**, with a flow of cars and pedestrians, the benefit of using RL over a rule-based method become clear.
+(Bouton et al. 2019) finds that using a **pure RL technique does not enable the agent to act more safely** than when using simple **rule-based methods**. But when the **scenario becomes more complex**, with a flow of cars and pedestrians, the benefit of using RL over a rule-based method become clear.
 
 Among successful approaches, only few report **evaluations on real vehicles**. (Folkers, Rick, and Christof 2019) conducted test on a full-size research vehicle during and show the potential of their RL-based controller for autonomous exploration of a parking lot. It would have been nice to have demonstration form them or from the RL research teams as [WAYVE](https://wayve.ai/blog) during the track-demo day!
 
@@ -305,7 +303,7 @@ The following is structure as follows:
 - Interpretability is not an option.
 - For validation process.
 
-### Benefits of the Learning with Non-Learning Combination
+### Benefit of Combining Learning with Non-Learning Approaches
 
 This **need for such combination** is illustrated in (Schulz et al. 2019). A probabilistic mapping from context and route intention to action distribution is learnt with deep neural networks. The benchmark include a non-learnt approach. They show that for **short-term predictions** of up to around `2` seconds, all the **learning-based models outperform the rule-based action model**. But the rule-based model becomes **more accurate for predictions with very long horizons**, exceeding `15s`.
 
@@ -315,7 +313,7 @@ It reminds me the issue of _drift_ in imitation learning, when error accumulates
 
 I have listed other example of successful combinations in the RL sections. The benefits can relate to the **generalization capability**, the **interpretability gain** or the **safety**. Here is another example.
 
-(Schratter et al. 2019a) combine a POMDP planner with an Autonomous Emergency Braking (AEB) system. In scenarios with occlusion, the **POMDP planner enables the system to anticipate this uncertainty** and to prevent an emergency stop. In **parallel**, the AEB system runs at a **higher frequency and intervenes** with a strong brake intervention **when a collision is unavoidable**. The resulting combination can pass obstacles faster than a sole POMDP, while avoiding all collisions.
+(Schratter et al. 2019) combine a POMDP planner with an Autonomous Emergency Braking (AEB) system. In scenarios with occlusion, the **POMDP planner enables the system to anticipate this uncertainty** and to prevent an emergency stop. In **parallel**, the AEB system runs at a **higher frequency and intervenes** with a strong brake intervention **when a collision is unavoidable**. The resulting combination can pass obstacles faster than a sole POMDP, while avoiding all collisions.
 
 | ![For each pedestrian, a probability of collision is computed from the time-to-brake TTB and the predicted position of the pedestrian. The difference between time to collision and time needed to stop is used to decide an emergency braking. Source: (Schratter et al. 2019).](media/pics/schratter_risk_assessement.PNG "For each pedestrian, a probability of collision is computed from the time-to-brake TTB and the predicted position of the pedestrian. The difference between time to collision and time needed to stop is used to decide an emergency braking. Source: (Schratter et al. 2019).")  |
 |:--:|
@@ -525,7 +523,7 @@ Finally, the action is selected based on the most conservative instance, i.e. wi
 |:--:|
 | *Scene decomposition technique based on multiple instances of a canonical scenario. Source: (Bouton et al. 2019).* |
 
-The utility decomposition method is also used in (Schratter et al. 2019a), where the simple task only considers one pedestrian.
+The utility decomposition method is also used in (Schratter et al. 2019), where the simple task only considers one pedestrian.
 
 Nevertheless, such decomposition methods **do not capture all the interactions**, especially those between the other vehicles or pedestrians.
 
@@ -617,7 +615,7 @@ Before I start, do you know the difference between a *situation*, a *scene* and 
 
 Another tool, [CommonRoad](https://commonroad.in.tum.de/), was used several times, especially since it implements highway scenario from the [NGSIM US 101 dataset](https://www.fhwa.dot.gov/publications/research/operations/07030/). The goal of this **collection of composable benchmarks for motion planning** on roads is to provide researchers with a means of evaluating and comparing their motion planners.
 
-To **represent the road network** in scenarios, I noticed that [Lanelets maps](https://github.com/phbender/liblanelet) (an open extension of the OSM format) are widely used (e.g. _GeoScenario_ and _CommonRoad_). The [Lanelets2 specification](https://github.com/fzi-forschungszentrum-informatik/lanelet2) is used in (Naumann et al. 2019a) to design a scenario with occlusion. Their experiment is based on a modified version of CommonROAD.
+To **represent the road network** in scenarios, I noticed that [Lanelets maps](https://github.com/phbender/liblanelet) (an open extension of the OSM format) are widely used (e.g. _GeoScenario_ and _CommonRoad_). The [Lanelets2 specification](https://github.com/fzi-forschungszentrum-informatik/lanelet2) is used in (Naumann et al. 2019) to design a scenario with occlusion. Their experiment is based on a modified version of CommonROAD.
 
 ### Common Critical Scenarios
 
@@ -627,11 +625,11 @@ This **test evaluation** makes me think of the **driving license exams**. Humans
 
 (Pusse and Klusch 2019) used the [GIDAS](https://www.gidas.org/willkommen/) (German In-Depth Accident Study) analysis of several **thousands of accidents that happened in Germany** to create a **benchmark**. Scenarios are then virtually simulated with the open-source 3D driving simulator [OpenDS](https://opends.dfki.de/).
 
-The [EuroNCAP](https://www.euroncap.com/) test protocol for vulnerable road users (VRUs) is used in (Schratter et al. 2019b). The selected subset covers the most amount of accidents **involving pedestrians**. To avoid overly conservative behaviours, they **augmented the suite** of scenarios with a situation **involving occluded areas** at the side of the road.
+The [EuroNCAP](https://www.euroncap.com/) test protocol for vulnerable road users (VRUs) is used in (Schratter et al. 2019). The selected subset covers the most amount of accidents **involving pedestrians**. To avoid overly conservative behaviours, they **augmented the suite** of scenarios with a situation **involving occluded areas** at the side of the road.
 
-| ![Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).](media/pics/schratter_NCAP.PNG "Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).")  |
+| ![Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019).](media/pics/schratter_NCAP.PNG "Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019).")  |
 |:--:|
-| *Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019b).* |
+| *Example of EuroNCAP scenarios used to evaluate pedestrian collision avoidance systems. Source: (Schratter et al. 2019).* |
 
 Only `75`% of all pedestrian accidents are covered with these crossing scenarios.
 As for NHTSA, edge-case scenarios must be separately generated.
@@ -689,10 +687,10 @@ Participants were **excited about this new dataset**. As Mykel Kochenderfer note
 
 This topic was new to me. I have heard of:
 
-- Safety validation for AD
-- RSS
-- Model checkers
-- Reachability sets
+- Safety validation for AD.
+- RSS.
+- Model checkers.
+- Reachability sets.
 
 ### Safety Proof for AD
 
@@ -860,8 +858,8 @@ Everyone was having fun in the demo of IRSTEA - Institut Pascal. Originally a pr
 
 In this section, I would like to address two topics:
 
-- Social acceptance of AD applications
-- Social benefit brought by AD applications
+- Social acceptance of AD applications.
+- Social benefit brought by AD applications.
 
 ### Social Acceptance
 
