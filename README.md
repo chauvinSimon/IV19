@@ -989,7 +989,7 @@ Another thing I noticed is the **central display**. It is supposed to **inform t
 
 This also raises the question of the **driving licence**. In the aviation domain, pilots are trained to handle such transitions and to collaborate. Introducing **level-3 vehicles** (sometimes called *“conditionally-automated”*) in hands of **untrained people** is questionable. In the debate over **supervised vs unsupervised driving modes**, multiple OEMs have already announced they will **skip level-3**, arguing that **this handover of control is unsafe**.
 
-| ![AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.](media/gif/tu_delft.gif "AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.")  |
+| ![AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.](media/gif/automate_take_over.gif "AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.")  |
 |:--:|
 | *AD system asking for human collaboration when 'approaching' a roundabout. Source: author provided.* |
 
