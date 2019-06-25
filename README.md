@@ -229,13 +229,13 @@ Interesting facts
 - No model-based RL? All IV19 RL-based approaches were **model-free**. During the [2019 ICML AD workshop](https://sites.google.com/view/icml2019aiad/talk-abstract-and-speaker-bio), taking place at the same time, Sergey Levine discussed the potential of **model-based RL for AD**. An affair to follow ...
 - **Value-based approaches** were dominant. I counted:
 
-| Count | Method                   |
-| :---: |:------------------------:|
-| 7     | Q-learning-based methods |
-| 2     | PPO                      |
-| 1     | DDPG                     |
-| 1     | NavA3C                   |
-| 0     | Model-based RL           |
+| Count | Method                                                |
+| :---: |:-----------------------------------------------------:|
+| 7     | Q-learning-based methods                              |
+| 2     | [PPO](https://openai.com/blog/openai-baselines-ppo/)  |
+| 1     | [DDPG](https://arxiv.org/abs/1509.02971)              |
+| 1     | [NavA3C](https://arxiv.org/abs/1611.03673)            |
+| 0     | Model-based RL                                        |
 
 ### Difference Learning vs Planning
 
