@@ -2,9 +2,9 @@
 
 *If some pictures are not loaded, try to refresh the page.*
 
-| ![2019 Intelligent Vehicle Symposium](media/pics/iv19.jpg "2019 Intelligent Vehicle Symposium")  |
+| ![2019 Intelligent Vehicle Symposium. [Source](https://iv2019.org/).](media/pics/iv19.jpg "2019 Intelligent Vehicle Symposium. [Source](https://iv2019.org/).")  |
 |:--:|
-| *2019 Intelligent Vehicle Symposium* |
+| *2019 Intelligent Vehicle Symposium. [Source](https://iv2019.org/).* |
 
 Early June 2019, experts from the autonomous driving (AD) world came together for the 2019 IEEE Intelligent Vehicle Symposium ([IV19](https://iv2019.org/)) in Paris to discuss about research and applications for autonomous driving.
 
@@ -90,6 +90,8 @@ My 10 takeaways:
 - [Conclusion](#conclusion)
 - [A Last Word](#a-last-word)
 - [References](#references)
+
+---
 
 ## We are living in a POMDP
 
@@ -206,6 +208,10 @@ The concept of **_tree_** is important in **online** solving. From one **initial
 (Schörner et al. 2019) and (Hubmann et al. 2019) use [**TAPIR**](http://robotics.itee.uq.edu.au/~hannakur/dokuwiki/doku.php?id=wiki:tapir), which is a software toolkit implementation of the online solver Adaptive Belief Tree (ABT).
 (Pusse and Klusch 2019) are extended the online solver [**DESPOT**](https://github.com/AdaCompNUS/despot) with **Importance Sampling** to enable outcomes that have a low probability of occurring, e.g. crashes to be sample. It reminds me the [Prioritized Experience Replay](https://arxiv.org/abs/1511.05952) used to replay important transitions more frequently in DQN.
 
+---
+
+---
+
 ## Reinforcement Learning
 
 This section is structured as followed:
@@ -276,6 +282,10 @@ Earlier that year, (Hoel et al. 2019) presented a tactical decision making that 
 At IV19, (Pusse and Klusch 2019) introduced a similar approached, named **_HYLEAP_**. The network acts as an **experience-based critic**, estimating the **value function** which is used to **guide the belief tree construction**.
 
 I really like this idea of **combining planning and learning** and expect other examples to follow. Maybe with a car experiment as well...
+
+---
+
+---
 
 ## Learning-based versus Non-Learning-based Approaches
 
@@ -359,6 +369,10 @@ After training a RL agent with PPO, (Folkers, Rick, and Christof 2019) compute a
 While we do not want to have a **GAIL-based agent generating the policy** of the autonomous vehicle, it can serve for **simulation and validation purposes**. Especially for the policy of other traffic participants in simulation. It does **not need to be 100% safe** or interpretable. And it can even find bugs in the hand designed engineering system. Moreover, the learning can be done **relatively fast** using naturalistic datasets to **model the most likely behaviour**. And it does not require much parameter tuning. Finally, obtaining a mean behaviour does not need much data.
 
 But in validation, it is important to also build model to estimate **low-probability events** that can lead to failures. And this is where **expert knowledge** (non-learnt) is extremely useful.
+
+---
+
+---
 
 ## Uncertainty
 
@@ -484,6 +498,10 @@ They show how it can be used to reduce uncertainty in the case of **occlusions**
 |:--:|
 | *From the behaviour of the other driver, the ego car can infer and become more confident about the probability of a pedestrian crossing. Source: (Sun et al. 2019).* |
 
+---
+
+---
+
 ## Generalization in Decision Modules
 
 Most authors show the relevance of their approaches on one or few scenarios. Usually with a fix number of traffic participants and a specific/arbitrary road layout. I was wondering how these approaches can **generalize to a different road structure**, in diverse scenarios with **a various number of participants**.
@@ -528,6 +546,10 @@ The utility decomposition method is also used in (Schratter et al. 2019), where 
 Nevertheless, such decomposition methods **do not capture all the interactions**, especially those between the other vehicles or pedestrians.
 
 This brings us to the topic of **interaction-aware reasoning**.
+
+---
+
+---
 
 ## Considering Interaction Between Traffic Participants
 
@@ -591,6 +613,10 @@ I did not hear so much about negotiation. Among of the papers, only one was ment
 Jack Weast argues that **RSS** (presented [later](#rss)) **is adapted to negotiation**, since it defines a safety envelop around the vehicle that can be used to **test how the others will respond**. For complex interactive scenarios such as _merging_, _overtaking_ and _yielding_, the vehicle can go right to the limit of the envelop, whose size is defined by the **risk tolerance**.
 
 An **affair to follow** (_maybe looking at game theory?_) together with the **promising GAIL- and CVAE-approaches**.
+
+---
+
+---
 
 ## Scenarios and Datasets
 
@@ -678,6 +704,10 @@ Wei Zhan, co-organizer of the SIPD workshop, took the opportunity to **announce 
 - Finally, all scenarios come with an [Lanelet2](https://github.com/fzi-forschungszentrum-informatik/Lanelet2)-based HD-map with semantic information. It will also have **occlusion as ground truth** in the model, which is key to test social perception.
 
 Participants were **excited about this new dataset**. As Mykel Kochenderfer noted, it would be nice to also include **very unstructured traffic**. He suggested looking at a place like **India** with more than `17%` of the total world population and see if algorithms from western right-driving countries work there.
+
+---
+
+---
 
 ## Do not Forget Safety
 
@@ -846,6 +876,10 @@ Mykel Kochenderfer ended his presentation by mentioning two remaining **challeng
 - It is still not clear **how to show** that the system that comes out of such **optimization** can be trusted.
 - **POMDPs with integrated model checkers** can be huge. Works still need to be done to overcome the **computational tractability**.
 
+---
+
+---
+
 ## AD and Society
 
 _This section solely reflects the opinion and conclusion of its authors, and not ERS Labs AG._
@@ -932,6 +966,10 @@ The benefit of safer vehicles technologies (not AD) introduced in the US between
 In the recent excellent [article](https://www.nature.com/articles/d41586-019-01473-3) “Driverless cars: researchers have made a wrong turn”, Ashley Nunes builds on that and asks:
 
 > If there is a group in the United States that stands to benefit most from the life-saving potential of self-driving technology, it’s those who live in the greatest poverty, but only if they can afford the technology. Driverless-car technology might have the potential to improve public health and save lives, but if those who most need it don’t have access, whose lives would we actually be saving?
+
+---
+
+---
 
 ## Demonstrations
 
@@ -1036,6 +1074,10 @@ I was showed how to **quickly retrieve all recorded highway scenarios** where th
 EasyMile and safety validation.
 
 I really enjoyed discussing with some of the engineers from EasyMile! They stressed the importance of the **development process** for **safety validation**. They took the example of the aviation domain where some **sensors must be made redundant** and must even originate from two different manufacturers. This is currently not the case for AD where, despite multi-modality in perception, there is usually one single camera per direction. What is more important to the validation authorities is **how the full system has been developed**. In particular the **“safety checker”** that **runs in parallel to the driving functions** must have been **developed independently** of these driving functions, by an **independent team**.
+
+---
+
+---
 
 ## Conclusion
 
