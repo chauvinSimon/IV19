@@ -26,7 +26,7 @@ Disclaimers:
 
 - These notes are **personal highlights** and do **not aim at being an exhausted review** of the IV19 publications.
 - I mainly focus on the topic of **decision making for AD** (as opposed to _perception_, _localisation_ or _control_ for instance).
-- Many subjects I am discussing are new to me. I really hope I did not misinterpret any concept when referencing to papers. Please notify me if any statement or interpretation is incorrect!
+- Many subjects I am discussing are new to me. I really hope I did not misinterpret any concept when referring to papers. Please notify me if any statement or interpretation is incorrect!
 
 ```
 My 10 takeaways:
