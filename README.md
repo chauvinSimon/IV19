@@ -1141,7 +1141,7 @@ Chen, Jianyu, Bodi Yuan, and Masayoshi Tomizuka. [2019].
 
 Chen, Longsheng et al. [2019].
 **“An Adaptive Path Tracking Controller Based on Reinforcement Learning with Urban Driving Application”**
-[-]
+[[html](https://www.researchgate.net/publication/335495374_An_Adaptive_Path_Tracking_Controller_Based_on_Reinforcement_Learning_with_Urban_Driving_Application)]
 
 Diehl, Frederik, Thomas Brunner, Michael Truong Le, and Alois Knoll. [2019].
 **“Graph Neural Networks for Modelling Traffic Participant Interaction”**
@@ -1157,7 +1157,8 @@ Esterle, Klemens, Vincent Aravantinos, and Alois Knoll. [2019].
 
 Folkers, Andreas, Matthias Rick, and B Christof. [2019].
 **“Controlling an Autonomous Vehicle with Deep Reinforcement Learning”**
-[-]
+[[html](https://www.researchgate.net/publication/334282855_Controlling_an_Autonomous_Vehicle_with_Deep_Reinforcement_Learning)]
+[[video](https://www.youtube.com/watch?v=1HwHdL7bY3A)]
 
 Hartmann, Michael, and Daniel Watzenig. [2019].
 **“Optimal Motion Planning with Reachable Sets of Vulnerable Road Users”**
@@ -1173,7 +1174,7 @@ Hu, Yeping, Wei Zhan, and Masayoshi Tomizuka. [2019].
 
 Hubmann, Constantin et al. [2019].
 **“A POMDP Maneuver Planner For Occlusions in Urban Scenarios”**
-[-]
+[[pdf](https://www.researchgate.net/profile/Constantin_Hubmann/publication/335083227_A_POMDP_Maneuver_Planner_For_Occlusions_in_Urban_Scenarios/links/5d4dc57ca6fdcc370a89c91e/A-POMDP-Maneuver-Planner-For-Occlusions-in-Urban-Scenarios.pdf)]
 
 Joonatan, Mänttäri, and John Folkesson. [2019].
 **“Incorporating Uncertainty in Predicting Vehicle Maneuvers at Intersections With Complex Interactions”**
@@ -1209,11 +1210,11 @@ Li, Jiachen, Hengbo Ma, Wei Zhan, and Masayoshi Tomizuka. [2019].
 
 Li, Yang et al. [2019].
 **“Pedestrian Trajectory Prediction With Learning-Based Approaches : A Comparative Study”**
-[-]
+[[html](https://www.researchgate.net/publication/335498066_Pedestrian_Trajectory_Prediction_with_Learning-based_Approaches_A_Comparative_Study)]
 
 Ma, Hengbo, Jiachen Li, Wei Zhan, and Masayoshi Tomizuka. [2019].
 **“Wasserstein Generative Learning with Kinematic Constraints for Probabilistic Prediction of Interactive Driving Behavior”**
-[-]
+[[html](https://www.researchgate.net/publication/335495730_Wasserstein_Generative_Learning_with_Kinematic_Constraints_for_Probabilistic_Interactive_Driving_Behavior_Prediction)]
 
 Naumann, Maximilian, Hendrik Königshof, Martin Lauer, and Christoph Stiller. [2019].
 **“Safe but Not Overcautious Motion Planning under Occlusions and Limited Sensor Range”**
@@ -1225,18 +1226,18 @@ Orzechowski, Piotr F, Annika Meyer, and Martin Lauer. [2018].
 
 Pierson, Alyssa, Wilko Schwarting, Sertac Karaman, and Daniela Rus. [2019].
 **“Learning Risk Level Set Parameters from Data Sets for Safer Driving”**
-[-]
+[[pdf](https://alyssapierson.files.wordpress.com/2019/08/pierson2019iv.pdf)]
 
 Pool, Ewoud A I, Julian F P Kooij, and Dariu M Gavrila. [2019].
 **“Context-Based Cyclist Path Prediction Using Recurrent Neural Networks”**
-[-]
+[[pdf](intelligent-vehicles.org/wp-content/uploads/2019/05/pool2019iv_cyclist_path_prediction_RNNs.pdf)]
 
 Pusse, Florian, and Matthias Klusch. [2019].
 **“Hybrid Online POMDP Planning and Deep Reinforcement Learning for Safer Self-Driving Cars”**
-[[html](https://www.dfki.de/en/web/research/projects-and-publications/publications/publication/10337/)]
+[[pdf](https://www.dfki.de/~klusch/i2s/hyleap-IV19.pdf)]
 
 Queiroz, Rodrigo, Thorsten Berger, and Krzysztof Czarnecki. [2019].
-**“GeoScenario : An Open DSL for Autonomous Driving Scenario Representation”
+**“GeoScenario : An Open DSL for Autonomous Driving Scenario Representation”**
 [[pdf](http://www.cse.chalmers.se/~bergert/paper/2019-iv-geoscenario.pdf)]
 
 Rehder, Tobias et al. [2019].
@@ -1253,11 +1254,11 @@ Schratter, Markus, Maxime Bouton, Mykel J. Kochenderfer, and Daniel Watzenig. [2
 
 Schulz, Jens et al. [2019].
 **“Learning Interaction-Aware Probabilistic Driver Behavior Models from Urban Scenarios”**
-[-]
+[[pdf](https://www.researchgate.net/publication/334591840_Learning_Interaction-Aware_Probabilistic_Driver_Behavior_Models_from_Urban_Scenarios)]
 
 Si, Wenwen, and Changliu Liu. [2019].
 **“AGen : Adaptable Generative Prediction Networks for Autonomous Driving”**
-[[html](https://www.ri.cmu.edu/publications/agen-adaptable-generative-prediction-networks-for-autonomous-driving/)]
+[[pdf](http://www.cs.cmu.edu/~cliu6/files/iv19-1.pdf)]
 
 Sun, Liting, Wei Zhan, Ching-Yao Chan, and Masayoshi Tomizuka. [2019].
 **“Behavior Planning of Autonomous Cars with Social Perception”**
@@ -1273,8 +1274,8 @@ Ulbrich, Simon et al. [2015].
 
 Ure, N Kemal, M Ugur Yavas, Ali Alizadeh, and Can Kurtulus. [2019].
 **“Enhancing Situational Awareness and Performance of Adaptive Cruise Control through Model Predictive Control and Deep Reinforcement Learning”**
-[-]
+[[html](https://www.researchgate.net/publication/335495547_Enhancing_Situational_Awareness_and_Performance_of_Adaptive_Cruise_Control_through_Model_Predictive_Control_and_Deep_Reinforcement_Learning)]
 
 Zernetsch, Stefan et al. [2019].
-**“Trajectory Forecasts with Uncertainties of Vulnerable Road Users by Means of Neural Networks**
-[-]
+**“Trajectory Forecasts with Uncertainties of Vulnerable Road Users by Means of Neural Networks"**
+[[html](https://www.researchgate.net/publication/335495376_Trajectory_Forecasts_with_Uncertainties_of_Vulnerable_Road_Users_by_Means_of_Neural_Networks)]
